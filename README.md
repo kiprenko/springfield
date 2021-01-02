@@ -2,7 +2,7 @@
 Where Homer Simpson lives.
 
 
-## Author :panda_face:
+## Author 🦝
 
 - Name: Evgeniy Kiprenko
 - Email: zhenyakiprenko@gmail.com
