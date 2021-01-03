@@ -34,4 +34,9 @@ public class UserManageController {
     public List<User> getUsersList(@PathVariable Integer page) {
         return (List<User>) userRepository.findAll();
     }
+
+    @GetMapping(value = "/get/{id}")
+    public User getUser(@PathVariable Long id) {
+        return userRepository.findById(id).orElse(null);
+    }
 }
