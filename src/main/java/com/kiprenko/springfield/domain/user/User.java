@@ -14,6 +14,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Transient;
 import javax.persistence.Version;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @Entity
@@ -28,13 +32,25 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @NotBlank
+    @Size(min = 3, max = 30)
     private String userName;
+    //    Temporary disabled
+//    @NotBlank
+    @Size(min = 3, max = 68)
     private String encryptedPassword;
     @Transient
     private String password;
+    @NotBlank
+    @Size(min = 3, max = 30)
     private String firstName;
+    @NotBlank
+    @Size(min = 3, max = 30)
     private String lastName;
+    @NotNull
+    @PastOrPresent
     private LocalDate birth;
+    @NotNull
     private UserRole role;
     @Version
     private Integer version;
