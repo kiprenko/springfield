@@ -1,13 +1,17 @@
 package com.kiprenko.springfield.domain.user;
 
+import java.util.List;
+
 public interface UserManager {
-    long create(User user);
+    User create(User user);
 
-    long get(long id);
+    User get(long id);
 
-    long getList(int page);
+    List<User> getList(int page);
 
-    long update(User user);
+    User updateInfo(User user);
+
+    User updatePassword(User user);
 
     void delete(long id);
 }

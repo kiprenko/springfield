@@ -1,7 +1,7 @@
 package com.kiprenko.springfield.controller;
 
 import com.kiprenko.springfield.domain.user.User;
-import com.kiprenko.springfield.domain.user.UserRepository;
+import com.kiprenko.springfield.domain.user.UserManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -21,49 +20,40 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping("/user")
 public class UserManageController {
 
-    private final UserRepository userRepository;
+    private final UserManager userManager;
 
     @Autowired
-    public UserManageController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserManageController(UserManager userManager) {
+        this.userManager = userManager;
     }
 
     @PostMapping(value = "/create", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public long createUser(@RequestBody User user) {
-        userRepository.save(user);
-        return user.getId();
+        return userManager.create(user).getId();
     }
 
     @GetMapping(value = "/list/{page}", produces = APPLICATION_JSON_VALUE)
     public List<User> getUsersList(@PathVariable Integer page) {
-        return (List<User>) userRepository.findAll();
+        return userManager.getList(page);
     }
 
     @GetMapping(value = "/get/{id}")
     public User getUser(@PathVariable Long id) {
-        return userRepository.findById(id).orElse(null);
+        return userManager.get(id);
     }
 
     @PutMapping(value = "/updateInfo", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public User updateUserInfo(@RequestBody User user) {
-        User persistedUser = userRepository.findById(user.getId()).orElseThrow(IllegalArgumentException::new);
-        Optional.ofNullable(user.getFirstName()).ifPresent(persistedUser::setFirstName);
-        Optional.ofNullable(user.getLastName()).ifPresent(persistedUser::setLastName);
-        Optional.ofNullable(user.getBirth()).ifPresent(persistedUser::setBirth);
-        userRepository.save(persistedUser);
-        return persistedUser;
+        return userManager.updateInfo(user);
     }
 
     @PutMapping(value = "/updatePassword", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public User updateUserPassword(@RequestBody User user) {
-        User persistedUser = userRepository.findById(user.getId()).orElseThrow(IllegalArgumentException::new);
-        Optional.ofNullable(user.getPassword()).ifPresent(persistedUser::setPassword);
-        userRepository.save(persistedUser);
-        return persistedUser;
+        return userManager.updatePassword(user);
     }
 
     @DeleteMapping(value = "/delete/{id}")
     public void deleteUser(@PathVariable Long id) {
-        userRepository.deleteById(id);
+        userManager.delete(id);
     }
 }
