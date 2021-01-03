@@ -3,6 +3,7 @@ package com.kiprenko.springfield.controller;
 import com.kiprenko.springfield.domain.user.User;
 import com.kiprenko.springfield.domain.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,10 +55,15 @@ public class UserManageController {
     }
 
     @PutMapping(value = "/updatePassword", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public User updatePassword(@RequestBody User user) {
+    public User updateUserPassword(@RequestBody User user) {
         User persistedUser = userRepository.findById(user.getId()).orElseThrow(IllegalArgumentException::new);
         Optional.ofNullable(user.getPassword()).ifPresent(persistedUser::setPassword);
         userRepository.save(persistedUser);
         return persistedUser;
+    }
+
+    @DeleteMapping(value = "/delete/{id}")
+    public void deleteUser(@PathVariable Long id) {
+        userRepository.deleteById(id);
     }
 }
