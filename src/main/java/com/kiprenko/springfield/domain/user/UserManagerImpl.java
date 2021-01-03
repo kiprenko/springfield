@@ -1,21 +1,21 @@
 package com.kiprenko.springfield.domain.user;
 
 import com.kiprenko.springfield.exception.UserNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserManagerImpl implements UserManager {
 
     private final UserRepository repository;
-
-    @Autowired
-    public UserManagerImpl(UserRepository repository) {
-        this.repository = repository;
-    }
+    @Value("${usersListPageSize}")
+    private int pageSize;
 
     @Override
     public User create(User user) {
@@ -24,12 +24,12 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public User get(long id) {
-        return repository.findById(id).orElse(null);
+        return repository.findById(id).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
     public List<User> getList(int page) {
-        return (List<User>) repository.findAll();
+        return repository.findAll(PageRequest.of(page, pageSize));
     }
 
     @Override
