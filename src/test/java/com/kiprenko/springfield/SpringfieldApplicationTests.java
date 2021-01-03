@@ -1,4 +1,4 @@
-package com.gmail.zhenyakiprenko.springfield;
+package com.kiprenko.springfield;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
