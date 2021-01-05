@@ -23,13 +23,13 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public User get(long id) {
-        return repository.findById(id).orElseThrow(UserNotFoundException::new);
+    public UserDto get(long id) {
+        return repository.findUserViewById(id).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
-    public List<User> getList(int page) {
-        return repository.findAll(PageRequest.of(page, pageSize));
+    public List<UserDto> getList(int page) {
+        return repository.findBy(PageRequest.of(page, pageSize));
     }
 
     @Override

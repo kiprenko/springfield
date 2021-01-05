@@ -4,8 +4,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserRepository extends CrudRepository<User, Long> {
 
-    List<User> findAll(Pageable pageable);
+    List<UserDto> findBy(Pageable pageable);
+
+    Optional<UserDto> findUserViewById(Long id);
 }

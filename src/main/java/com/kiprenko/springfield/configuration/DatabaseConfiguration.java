@@ -21,7 +21,7 @@ public class DatabaseConfiguration {
 
     private void loadUsers(UserRepository userRepository) {
         LOGGER.info("Preloading " + userRepository.save(User.builder()
-                                                            .userName("admin")
+                                                            .username("admin")
                                                             .password("A12345")
                                                             .firstName("Tom")
                                                             .lastName("Collins")
@@ -29,7 +29,7 @@ public class DatabaseConfiguration {
                                                             .role(UserRole.ADMIN)
                                                             .build()));
         LOGGER.info("Preloading " + userRepository.save(User.builder()
-                                                            .userName("timofey")
+                                                            .username("timofey")
                                                             .password("A12345")
                                                             .firstName("Timofey")
                                                             .lastName("Handsome")

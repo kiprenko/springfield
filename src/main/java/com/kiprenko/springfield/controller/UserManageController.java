@@ -1,15 +1,16 @@
 package com.kiprenko.springfield.controller;
 
 import com.kiprenko.springfield.domain.user.User;
+import com.kiprenko.springfield.domain.user.UserDto;
 import com.kiprenko.springfield.domain.user.UserManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -32,13 +33,16 @@ public class UserManageController {
         return userManager.create(user).getId();
     }
 
-    @GetMapping(value = "/list/{page}", produces = APPLICATION_JSON_VALUE)
-    public List<User> getUsersList(@PathVariable Integer page) {
+    @GetMapping(value = "/list", produces = APPLICATION_JSON_VALUE)
+    public List<UserDto> getUsersList(@RequestParam Integer page) {
+        if (page == null) {
+            throw new IllegalArgumentException();
+        }
         return userManager.getList(page);
     }
 
-    @GetMapping(value = "/get/{id}")
-    public User getUser(@PathVariable Long id) {
+    @GetMapping(value = "/get", produces = APPLICATION_JSON_VALUE)
+    public UserDto getUser(@RequestParam Long id) {
         return userManager.get(id);
     }
 
@@ -52,8 +56,8 @@ public class UserManageController {
         return userManager.updatePassword(user);
     }
 
-    @DeleteMapping(value = "/delete/{id}")
-    public void deleteUser(@PathVariable Long id) {
+    @DeleteMapping(value = "/delete")
+    public void deleteUser(@RequestParam Long id) {
         userManager.delete(id);
     }
 }

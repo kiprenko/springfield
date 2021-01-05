@@ -34,7 +34,7 @@ public class User {
     private Long id;
     @NotBlank
     @Size(min = 3, max = 30)
-    private String userName;
+    private String username;
     //    Temporary disabled
 //    @NotBlank
     @Size(min = 3, max = 68)

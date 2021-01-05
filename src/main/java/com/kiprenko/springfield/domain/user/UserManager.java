@@ -5,9 +5,9 @@ import java.util.List;
 public interface UserManager {
     User create(User user);
 
-    User get(long id);
+    UserDto get(long id);
 
-    List<User> getList(int page);
+    List<UserDto> getList(int page);
 
     User updateInfo(User user);
 
