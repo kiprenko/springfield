@@ -52,8 +52,8 @@ public class UserManageController {
     }
 
     @PutMapping(value = "/updatePassword", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public User updateUserPassword(@RequestBody User user) {
-        return userManager.updatePassword(user);
+    public void updateUserPassword(@RequestParam Long id, @RequestBody String newPassword) {
+        userManager.updatePassword(id, newPassword);
     }
 
     @DeleteMapping(value = "/delete")

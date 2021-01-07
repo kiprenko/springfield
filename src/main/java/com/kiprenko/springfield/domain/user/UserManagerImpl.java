@@ -14,8 +14,8 @@ import java.util.Optional;
 public class UserManagerImpl implements UserManager {
 
     private final UserRepository repository;
-    @Value("${usersListPageSize}")
-    private int pageSize;
+    @Value("${usersListDefaultPageSize}")
+    private int defaultPageSize;
 
     @Override
     public User create(User user) {
@@ -29,7 +29,7 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public List<UserDto> getList(int page) {
-        return repository.findBy(PageRequest.of(page, pageSize));
+        return repository.findBy(PageRequest.of(page, defaultPageSize));
     }
 
     @Override
@@ -47,10 +47,13 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public User updatePassword(User user) {
-        User persistedUser = repository.findById(user.getId()).orElseThrow(UserNotFoundException::new);
-        Optional.ofNullable(user.getPassword()).ifPresent(persistedUser::setPassword);
-        return repository.save(persistedUser);
+    public void updatePassword(Long id, String newPassword) {
+        if (newPassword == null || newPassword.isBlank()) {
+            throw new IllegalArgumentException(String.format("Can't update password for user with ID = %d. New password is null or blank", id));
+        }
+        User persistedUser = repository.findById(id)
+                                       .orElseThrow(() -> new UserNotFoundException(String.format("User with ID = %d wasn't found", id)));
+        repository.save(persistedUser);
     }
 
     @Override

@@ -11,7 +11,7 @@ public interface UserManager {
 
     void updateInfo(UserDto user);
 
-    User updatePassword(User user);
+    void updatePassword(Long id, String newPassword);
 
     void delete(long id);
 }
