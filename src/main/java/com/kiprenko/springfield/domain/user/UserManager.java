@@ -9,7 +9,7 @@ public interface UserManager {
 
     List<UserDto> getList(int page);
 
-    User updateInfo(User user);
+    void updateInfo(UserDto user);
 
     User updatePassword(User user);
 

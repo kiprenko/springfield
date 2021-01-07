@@ -47,8 +47,8 @@ public class UserManageController {
     }
 
     @PutMapping(value = "/updateInfo", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public User updateUserInfo(@RequestBody User user) {
-        return userManager.updateInfo(user);
+    public void updateUserInfo(@RequestBody UserDto user) {
+        userManager.updateInfo(user);
     }
 
     @PutMapping(value = "/updatePassword", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)

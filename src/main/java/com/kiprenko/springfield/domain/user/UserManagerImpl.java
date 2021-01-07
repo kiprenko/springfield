@@ -33,12 +33,17 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public User updateInfo(User user) {
-        User persistedUser = repository.findById(user.getId()).orElseThrow(UserNotFoundException::new);
-        Optional.ofNullable(user.getFirstName()).ifPresent(persistedUser::setFirstName);
-        Optional.ofNullable(user.getLastName()).ifPresent(persistedUser::setLastName);
-        Optional.ofNullable(user.getBirth()).ifPresent(persistedUser::setBirth);
-        return repository.save(persistedUser);
+    public void updateInfo(UserDto userInfoUpdate) {
+        User persistedUser = repository.findById(userInfoUpdate.getId()).orElseThrow(UserNotFoundException::new);
+        Optional.ofNullable(userInfoUpdate.getFirstName())
+                .filter(s -> !s.isBlank())
+                .ifPresent(persistedUser::setFirstName);
+        Optional.ofNullable(userInfoUpdate.getLastName())
+                .filter(s -> !s.isBlank())
+                .ifPresent(persistedUser::setLastName);
+        Optional.ofNullable(userInfoUpdate.getBirth())
+                .ifPresent(persistedUser::setBirth);
+        repository.save(persistedUser);
     }
 
     @Override
