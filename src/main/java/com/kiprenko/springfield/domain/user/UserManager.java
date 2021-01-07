@@ -16,4 +16,6 @@ public interface UserManager {
     void updatePassword(Long id, String newPassword);
 
     void delete(long id);
+
+    long getCount();
 }

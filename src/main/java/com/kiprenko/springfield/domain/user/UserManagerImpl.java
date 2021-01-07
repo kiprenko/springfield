@@ -65,4 +65,9 @@ public class UserManagerImpl implements UserManager {
     public void delete(long id) {
         repository.deleteById(id);
     }
+
+    @Override
+    public long getCount() {
+        return repository.count();
+    }
 }

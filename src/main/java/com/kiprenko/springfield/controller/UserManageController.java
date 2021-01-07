@@ -70,4 +70,9 @@ public class UserManageController {
     public void deleteUser(@RequestParam Long id) {
         userManager.delete(id);
     }
+
+    @GetMapping(value = "/count", produces = APPLICATION_JSON_VALUE)
+    public long getUsersCount() {
+        return userManager.getCount();
+    }
 }
