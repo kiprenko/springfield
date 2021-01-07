@@ -34,11 +34,14 @@ public class UserManageController {
     }
 
     @GetMapping(value = "/list", produces = APPLICATION_JSON_VALUE)
-    public List<UserDto> getUsersList(@RequestParam Integer page) {
-        if (page == null) {
-            throw new IllegalArgumentException();
+    public List<UserDto> getUsersList(@RequestParam Integer pageNumber, @RequestParam(required = false) Integer pageSize) {
+        if (pageNumber == null || pageNumber < 0) {
+            throw new IllegalArgumentException("Page number can't be null or less than zero. PageNumber = " + pageNumber);
         }
-        return userManager.getList(page);
+        if (pageSize == null) {
+            return userManager.getList(pageNumber);
+        }
+        return userManager.getList(pageNumber, pageSize);
     }
 
     @GetMapping(value = "/get", produces = APPLICATION_JSON_VALUE)

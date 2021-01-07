@@ -9,6 +9,8 @@ public interface UserManager {
 
     List<UserDto> getList(int page);
 
+    List<UserDto> getList(int page, int pageSize);
+
     void updateInfo(UserDto user);
 
     void updatePassword(Long id, String newPassword);

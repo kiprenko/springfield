@@ -29,7 +29,12 @@ public class UserManagerImpl implements UserManager {
 
     @Override
     public List<UserDto> getList(int page) {
-        return repository.findBy(PageRequest.of(page, defaultPageSize));
+        return getList(page, defaultPageSize);
+    }
+
+    @Override
+    public List<UserDto> getList(int page, int pageSize) {
+        return repository.findBy(PageRequest.of(page, pageSize));
     }
 
     @Override
