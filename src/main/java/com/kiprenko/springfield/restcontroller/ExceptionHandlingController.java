@@ -1,4 +1,4 @@
-package com.kiprenko.springfield.controller;
+package com.kiprenko.springfield.restcontroller;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.ControllerAdvice;

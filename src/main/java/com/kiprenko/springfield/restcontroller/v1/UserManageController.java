@@ -1,4 +1,4 @@
-package com.kiprenko.springfield.controller;
+package com.kiprenko.springfield.restcontroller.v1;
 
 import com.kiprenko.springfield.domain.user.User;
 import com.kiprenko.springfield.domain.user.UserDto;
