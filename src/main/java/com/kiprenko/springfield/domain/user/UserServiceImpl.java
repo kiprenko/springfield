@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserManagerImpl implements UserManager {
+public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
     private final int defaultPageSize;
 
-    public UserManagerImpl(UserRepository repository, @Value("${usersListDefaultPageSize}") int defaultPageSize) {
+    public UserServiceImpl(UserRepository repository, @Value("${usersListDefaultPageSize}") int defaultPageSize) {
         this.repository = repository;
         this.defaultPageSize = defaultPageSize;
     }

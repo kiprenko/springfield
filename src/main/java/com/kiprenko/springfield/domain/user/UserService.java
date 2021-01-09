@@ -2,7 +2,7 @@ package com.kiprenko.springfield.domain.user;
 
 import java.util.List;
 
-public interface UserManager {
+public interface UserService {
     User create(User user);
 
     UserDto get(long id);
