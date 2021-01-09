@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto get(long id) {
-        return repository.findUserViewById(id).orElseThrow(UserNotFoundException::new);
+        return repository.findProjectionById(id).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getList(int page, int pageSize) {
-        return repository.findBy(PageRequest.of(page, pageSize));
+        return repository.findAllProjectionsBy(PageRequest.of(page, pageSize));
     }
 
     @Override
