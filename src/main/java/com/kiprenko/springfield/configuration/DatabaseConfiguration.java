@@ -22,7 +22,7 @@ public class DatabaseConfiguration {
     private void loadUsers(UserRepository userRepository) {
         LOGGER.info("Preloading " + userRepository.save(User.builder()
                                                             .username("admin")
-                                                            .password("A12345")
+                                                            .encryptedPassword("A12345")
                                                             .firstName("Tom")
                                                             .lastName("Collins")
                                                             .birth(LocalDate.now().minusYears(32))
@@ -30,7 +30,7 @@ public class DatabaseConfiguration {
                                                             .build()));
         LOGGER.info("Preloading " + userRepository.save(User.builder()
                                                             .username("timofey")
-                                                            .password("A12345")
+                                                            .encryptedPassword("A12345")
                                                             .firstName("Timofey")
                                                             .lastName("Handsome")
                                                             .birth(LocalDate.now().minusYears(25))

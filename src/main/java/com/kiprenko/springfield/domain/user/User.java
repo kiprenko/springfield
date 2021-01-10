@@ -35,8 +35,7 @@ public class User {
     @NotBlank
     @Size(min = 3, max = 30)
     private String username;
-    //    Temporary disabled
-//    @NotBlank
+    @NotBlank
     @Size(min = 3, max = 68)
     private String encryptedPassword;
     @Transient
