@@ -11,6 +11,8 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
+                .antMatchers("/api/v1/version")
+                .permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
