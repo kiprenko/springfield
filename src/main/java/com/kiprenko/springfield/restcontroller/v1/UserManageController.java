@@ -51,7 +51,7 @@ public class UserManageController {
         }
     }
 
-    @GetMapping(value = "/get", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(produces = APPLICATION_JSON_VALUE)
     public UserDto getUser(@RequestParam Long id) {
         return userService.get(id);
     }
