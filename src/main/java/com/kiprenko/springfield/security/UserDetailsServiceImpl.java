@@ -3,14 +3,10 @@ package com.kiprenko.springfield.security;
 import com.kiprenko.springfield.domain.user.User;
 import com.kiprenko.springfield.domain.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -36,16 +32,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .isAccountNonLocked(true)
                 .isEnabled(true)
                 .isCredentialsNonExpired(true)
-                .grantedAuthorities(getUserAuthorities(user))
+                .grantedAuthorities(user.getRole().getGrantedAuthorities())
                 .build();
-    }
-
-    private Set<SimpleGrantedAuthority> getUserAuthorities(User user) {
-        return user.getRole()
-                .getPermissions()
-                .stream()
-                .map(Enum::name)
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toSet());
     }
 }

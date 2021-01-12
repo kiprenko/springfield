@@ -43,7 +43,7 @@ public class DatabaseConfiguration {
                 .role(UserRole.ADMIN)
                 .build()));
         LOGGER.info("Preloading " + userRepository.save(User.builder()
-                .username("timofey")
+                .username("user")
                 .encryptedPassword(passwordEncoder.encode("A12345"))
                 .firstName("Timofey")
                 .lastName("Handsome")

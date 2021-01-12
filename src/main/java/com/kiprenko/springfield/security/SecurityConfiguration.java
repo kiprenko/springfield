@@ -11,6 +11,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import static com.kiprenko.springfield.domain.user.UserPermission.READ_USERS_DATA;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
@@ -30,7 +32,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/v1/version").permitAll()
+                .antMatchers("/api/v1/version", "/api/v1/user/create").permitAll()
+                .antMatchers("/api/v1/user/count").hasAuthority(READ_USERS_DATA.getPermission())
                 .anyRequest()
                 .authenticated()
                 .and()
