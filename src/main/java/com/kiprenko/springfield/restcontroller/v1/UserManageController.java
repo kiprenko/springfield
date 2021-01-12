@@ -52,8 +52,11 @@ public class UserManageController {
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
-    public UserDto getUser(@RequestParam Long id) {
-        return userService.get(id);
+    public UserDto getUser(@RequestParam(required = false) Long id, @RequestParam(required = false) String username) {
+        if (id == null && username == null) {
+            throw new IllegalArgumentException("Can't get a user when both id and username null. Specify id or username parameter.");
+        }
+        return id == null ? userService.get(username) : userService.get(id);
     }
 
     @PutMapping(value = "/updateInfo", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)

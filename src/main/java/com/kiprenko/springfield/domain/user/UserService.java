@@ -8,7 +8,9 @@ public interface UserService {
 
     UserDto get(long id);
 
-    Optional<User> get(String username);
+    UserDto get(String username);
+
+    Optional<User> getUser(String username);
 
     List<UserDto> getList(int page);
 

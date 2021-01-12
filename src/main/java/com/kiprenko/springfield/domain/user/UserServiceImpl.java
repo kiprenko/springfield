@@ -26,12 +26,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto get(long id) {
+        if (id < 1) {
+            throw new IllegalArgumentException("Can't get a user by ID less than 1. ID = %d" + id);
+        }
         return repository.findProjectionById(id).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
-    public Optional<User> get(String username) {
+    public UserDto get(String username) {
+        assertUsername(username);
+        return repository.findProjectionByUsername(username).orElseThrow(UserNotFoundException::new);
+    }
+
+    @Override
+    public Optional<User> getUser(String username) {
+        assertUsername(username);
         return repository.findByUsername(username);
+    }
+
+    private void assertUsername(String username) {
+        if (username == null || username.isBlank()) {
+            throw new IllegalArgumentException("Can't get a user by null or blank username. Username = " + username);
+        }
     }
 
     @Override

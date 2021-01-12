@@ -13,4 +13,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<UserDto> findProjectionById(Long id);
 
     Optional<User> findByUsername(String username);
+
+    Optional<UserDto> findProjectionByUsername(String username);
 }
