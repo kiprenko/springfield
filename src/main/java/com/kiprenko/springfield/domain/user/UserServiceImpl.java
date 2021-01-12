@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto get(long id) {
         if (id < 1) {
-            throw new IllegalArgumentException("Can't get a user by ID less than 1. ID = %d" + id);
+            throw new IllegalArgumentException("Can't get a user by ID less than 1. ID = " + id);
         }
         return repository.findProjectionById(id).orElseThrow(UserNotFoundException::new);
     }

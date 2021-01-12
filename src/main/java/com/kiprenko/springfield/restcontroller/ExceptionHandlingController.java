@@ -13,6 +13,6 @@ public class ExceptionHandlingController {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleException(Exception ex) {
         LOGGER.error(ex);
-        return new ResponseEntity<>("Error: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(String.format("%s: %s", ex.getClass().getName(), ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
