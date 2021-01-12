@@ -26,10 +26,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto get(long id) {
-        if (id < 1) {
-            throw new IllegalArgumentException("Can't get a user by ID less than 1. ID = " + id);
-        }
+        assertId(id, "Can't get a user by ID less than 1. ID = %d");
         return repository.findProjectionById(id).orElseThrow(UserNotFoundException::new);
+    }
+
+    private void assertId(long id, String s) {
+        if (id < 1) {
+            throw new IllegalArgumentException(String.format(s, id));
+        }
     }
 
     @Override
@@ -62,6 +66,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateInfo(UserDto userInfoUpdate) {
+        if (userInfoUpdate == null) {
+            throw new IllegalArgumentException("Can't update user info when userInfoUpdate is null");
+        }
         User persistedUser = repository.findById(userInfoUpdate.getId()).orElseThrow(UserNotFoundException::new);
         Optional.ofNullable(userInfoUpdate.getFirstName())
                 .filter(s -> !s.isBlank())
@@ -86,6 +93,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(long id) {
+        assertId(id, "Can't delete a user by ID less than 1. ID = %d");
         repository.deleteById(id);
     }
 
