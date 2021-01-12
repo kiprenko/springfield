@@ -12,19 +12,21 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
-    private final UserConverter converter;
+    private final UserMapper userMapper;
     private final int defaultPageSize;
 
-    public UserServiceImpl(UserRepository repository, UserConverter converter, @Value("${usersListDefaultPageSize}") int defaultPageSize) {
+    public UserServiceImpl(UserRepository repository,
+                           UserMapper userMapper,
+                           @Value("${usersListDefaultPageSize}") int defaultPageSize) {
         this.repository = repository;
-        this.converter = converter;
+        this.userMapper = userMapper;
         this.defaultPageSize = defaultPageSize;
     }
 
     @Override
-    public User create(UserDto user) {
-        assertUserDto(user, "Can't create a user info when user is null");
-        return repository.save(converter.convertDtoToUser(user));
+    public User create(UserDto userDto) {
+        assertUserDto(userDto, "Can't create a user info when user is null");
+        return repository.save(userMapper.convertDtoToUser(userDto));
     }
 
     @Override
