@@ -1,17 +1,16 @@
 package com.kiprenko.springfield.domain.user;
 
-import lombok.Value;
-import org.springframework.data.rest.core.config.Projection;
+import lombok.Data;
 
 import java.time.LocalDate;
 
-@Value
-@Projection(types = User.class, name = "User")
+@Data
 public class UserDto {
-    Long id;
-    String username;
-    String firstName;
-    String lastName;
-    LocalDate birth;
-    UserRole role;
+    private Long id;
+    private String username;
+    private String password;
+    private String firstName;
+    private String lastName;
+    private LocalDate birth;
+    private UserRole role;
 }

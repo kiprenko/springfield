@@ -1,7 +1,7 @@
 package com.kiprenko.springfield.restcontroller.v1;
 
-import com.kiprenko.springfield.domain.user.User;
 import com.kiprenko.springfield.domain.user.UserDto;
+import com.kiprenko.springfield.domain.user.UserInfoProjection;
 import com.kiprenko.springfield.domain.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,12 +29,12 @@ public class UserManageController {
     }
 
     @PostMapping(value = "/create", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public long createUser(@RequestBody User user) {
+    public long createUser(@RequestBody UserDto user) {
         return userService.create(user).getId();
     }
 
     @GetMapping(value = "/list", produces = APPLICATION_JSON_VALUE)
-    public List<UserDto> getUsersList(@RequestParam Integer pageNumber, @RequestParam(required = false) Integer pageSize) {
+    public List<UserInfoProjection> getUsersList(@RequestParam Integer pageNumber, @RequestParam(required = false) Integer pageSize) {
         AssertUsersListParameters(pageNumber, pageSize);
         if (pageSize == null) {
             return userService.getList(pageNumber);
@@ -52,7 +52,7 @@ public class UserManageController {
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
-    public UserDto getUser(@RequestParam(required = false) Long id, @RequestParam(required = false) String username) {
+    public UserInfoProjection getUser(@RequestParam(required = false) Long id, @RequestParam(required = false) String username) {
         if (id == null && username == null) {
             throw new IllegalArgumentException("Can't get a user when both id and username null. Specify id or username parameter.");
         }

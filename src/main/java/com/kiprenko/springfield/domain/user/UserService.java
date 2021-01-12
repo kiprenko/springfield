@@ -4,17 +4,17 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-    User create(User user);
+    User create(UserDto user);
 
-    UserDto get(long id);
+    UserInfoProjection get(long id);
 
-    UserDto get(String username);
+    UserInfoProjection get(String username);
 
     Optional<User> getUser(String username);
 
-    List<UserDto> getList(int page);
+    List<UserInfoProjection> getList(int page);
 
-    List<UserDto> getList(int page, int pageSize);
+    List<UserInfoProjection> getList(int page, int pageSize);
 
     void updateInfo(UserDto user);
 
