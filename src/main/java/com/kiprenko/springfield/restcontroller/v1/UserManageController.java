@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.security.RolesAllowed;
 import java.util.List;
 
+import static com.kiprenko.springfield.security.SecurityConstants.ADMIN_ROLE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
@@ -28,11 +30,13 @@ public class UserManageController {
         this.userService = userService;
     }
 
+    @RolesAllowed(ADMIN_ROLE)
     @PostMapping(value = "/create", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public long createUser(@RequestBody UserDto user) {
         return userService.create(user).getId();
     }
 
+    @RolesAllowed(ADMIN_ROLE)
     @GetMapping(value = "/list", produces = APPLICATION_JSON_VALUE)
     public List<UserInfoProjection> getUsersList(@RequestParam Integer pageNumber, @RequestParam(required = false) Integer pageSize) {
         AssertUsersListParameters(pageNumber, pageSize);
@@ -69,11 +73,13 @@ public class UserManageController {
         userService.updatePassword(id, newPassword);
     }
 
+    @RolesAllowed(ADMIN_ROLE)
     @DeleteMapping(value = "/delete")
     public void deleteUser(@RequestParam Long id) {
         userService.delete(id);
     }
 
+    @RolesAllowed(ADMIN_ROLE)
     @GetMapping(value = "/count", produces = APPLICATION_JSON_VALUE)
     public long getUsersCount() {
         return userService.getCount();
