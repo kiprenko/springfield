@@ -30,6 +30,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<User> get(String username) {
+        return repository.findByUsername(username);
+    }
+
+    @Override
     public List<UserDto> getList(int page) {
         return getList(page, defaultPageSize);
     }

@@ -11,4 +11,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<UserDto> findAllProjectionsBy(Pageable pageable);
 
     Optional<UserDto> findProjectionById(Long id);
+
+    Optional<User> findByUsername(String username);
 }

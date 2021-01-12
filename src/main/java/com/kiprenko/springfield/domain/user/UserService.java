@@ -1,11 +1,14 @@
 package com.kiprenko.springfield.domain.user;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
     User create(User user);
 
     UserDto get(long id);
+
+    Optional<User> get(String username);
 
     List<UserDto> getList(int page);
 
