@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -12,6 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import javax.crypto.SecretKey;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -22,27 +22,32 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.kiprenko.springfield.security.SecurityConstants.AUTHORIZATION_HEADER;
-import static com.kiprenko.springfield.security.SecurityConstants.BEARER_PREFIX;
-
 @Log4j2
 public class JwtTokenVerifyingFilter extends OncePerRequestFilter {
+
+    private final JwtConfiguration jwtConfiguration;
+    private final SecretKey secretKey;
+
+    public JwtTokenVerifyingFilter(JwtConfiguration jwtConfiguration, SecretKey secretKey) {
+        this.jwtConfiguration = jwtConfiguration;
+        this.secretKey = secretKey;
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
-        if (authorizationHeader == null || authorizationHeader.isBlank() || !authorizationHeader.startsWith(BEARER_PREFIX)) {
+        String authorizationHeader = request.getHeader(jwtConfiguration.getAuthorizationHeader());
+        String tokenPrefix = jwtConfiguration.getTokenPrefix();
+        if (authorizationHeader == null || authorizationHeader.isBlank() || !authorizationHeader.startsWith(tokenPrefix)) {
             filterChain.doFilter(request, response);
             return;
         }
-
-        String secretKey = "aSuperDuperSecretKeyCapybaraFriendsWithRaccoon";
-        String token = authorizationHeader.replace(BEARER_PREFIX, "");
+        String token = authorizationHeader.replace(tokenPrefix, "");
 
         try {
             Jws<Claims> claimsJws = Jwts.parserBuilder()
-                    .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                    .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token);
             Claims body = claimsJws.getBody();

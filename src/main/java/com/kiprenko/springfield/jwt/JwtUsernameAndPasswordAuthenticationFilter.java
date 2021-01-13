@@ -2,7 +2,6 @@ package com.kiprenko.springfield.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -10,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import javax.crypto.SecretKey;
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,16 +18,19 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
-import static com.kiprenko.springfield.security.SecurityConstants.AUTHORIZATION_HEADER;
-import static com.kiprenko.springfield.security.SecurityConstants.BEARER_PREFIX;
-
 @Log4j2
 public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
+    private final JwtConfiguration jwtConfiguration;
+    private final SecretKey secretKey;
 
-    public JwtUsernameAndPasswordAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public JwtUsernameAndPasswordAuthenticationFilter(AuthenticationManager authenticationManager,
+                                                      JwtConfiguration jwtConfiguration,
+                                                      SecretKey secretKey) {
         this.authenticationManager = authenticationManager;
+        this.jwtConfiguration = jwtConfiguration;
+        this.secretKey = secretKey;
     }
 
     @Override
@@ -53,14 +56,13 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                                             HttpServletResponse response,
                                             FilterChain chain,
                                             Authentication authResult) {
-        String secretKey = "aSuperDuperSecretKeyCapybaraFriendsWithRaccoon";
         String token = Jwts.builder()
                 .setSubject(authResult.getName())
                 .claim("authorities", authResult.getAuthorities())
                 .setIssuedAt(new Date())
-                .setExpiration(Date.from(Instant.now().plus(1, ChronoUnit.DAYS)))
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .setExpiration(Date.from(Instant.now().plus(jwtConfiguration.getTokenExpirationHours(), ChronoUnit.HOURS)))
+                .signWith(secretKey)
                 .compact();
-        response.addHeader(AUTHORIZATION_HEADER, BEARER_PREFIX + token);
+        response.addHeader(jwtConfiguration.getAuthorizationHeader(), jwtConfiguration.getTokenPrefix() + token);
     }
 }
