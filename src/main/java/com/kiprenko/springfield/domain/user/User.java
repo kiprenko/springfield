@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -33,10 +34,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @NotBlank
+    @Column(unique = true)
     @Size(min = 3, max = 30)
     private String username;
-    //    Temporary disabled
-//    @NotBlank
+    @NotBlank
     @Size(min = 3, max = 68)
     private String encryptedPassword;
     @Transient

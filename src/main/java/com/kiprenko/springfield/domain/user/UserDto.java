@@ -1,17 +1,28 @@
 package com.kiprenko.springfield.domain.user;
 
-import lombok.Value;
-import org.springframework.data.rest.core.config.Projection;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDate;
 
-@Value
-@Projection(types = User.class, name = "User")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString(exclude = "password")
 public class UserDto {
-    Long id;
-    String username;
-    String firstName;
-    String lastName;
-    LocalDate birth;
-    UserRole role;
+    private Long id;
+    private String username;
+    private String password;
+    private String firstName;
+    private String lastName;
+    private LocalDate birth;
+    private UserRole role;
 }

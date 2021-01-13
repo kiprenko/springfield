@@ -12,45 +12,82 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
+    private final UserMapper userMapper;
     private final int defaultPageSize;
 
-    public UserServiceImpl(UserRepository repository, @Value("${usersListDefaultPageSize}") int defaultPageSize) {
+    public UserServiceImpl(UserRepository repository,
+                           UserMapper userMapper,
+                           @Value("${usersListDefaultPageSize}") int defaultPageSize) {
         this.repository = repository;
+        this.userMapper = userMapper;
         this.defaultPageSize = defaultPageSize;
     }
 
     @Override
-    public User create(User user) {
-        return repository.save(user);
+    public User create(UserDto userDto) {
+        assertUserDto(userDto, "Can't create a user info when user is null");
+        return repository.save(userMapper.convertDtoToUser(userDto));
     }
 
     @Override
-    public UserDto get(long id) {
+    public UserInfoProjection get(long id) {
+        assertId(id, "Can't get a user by ID less than 1. ID = %d");
         return repository.findProjectionById(id).orElseThrow(UserNotFoundException::new);
     }
 
+    private void assertId(long id, String msg) {
+        if (id < 1) {
+            throw new IllegalArgumentException(String.format(msg, id));
+        }
+    }
+
     @Override
-    public List<UserDto> getList(int page) {
+    public UserInfoProjection get(String username) {
+        assertUsername(username);
+        return repository.findProjectionByUsername(username).orElseThrow(UserNotFoundException::new);
+    }
+
+    @Override
+    public Optional<User> getUser(String username) {
+        assertUsername(username);
+        return repository.findByUsername(username);
+    }
+
+    private void assertUsername(String username) {
+        if (username == null || username.isBlank()) {
+            throw new IllegalArgumentException("Can't get a user by null or blank username. Username = " + username);
+        }
+    }
+
+    @Override
+    public List<UserInfoProjection> getList(int page) {
         return getList(page, defaultPageSize);
     }
 
     @Override
-    public List<UserDto> getList(int page, int pageSize) {
+    public List<UserInfoProjection> getList(int page, int pageSize) {
         return repository.findAllProjectionsBy(PageRequest.of(page, pageSize));
     }
 
     @Override
-    public void updateInfo(UserDto userInfoUpdate) {
-        User persistedUser = repository.findById(userInfoUpdate.getId()).orElseThrow(UserNotFoundException::new);
-        Optional.ofNullable(userInfoUpdate.getFirstName())
+    public void updateInfo(UserDto user) {
+        assertUserDto(user, "Can't update a user info when user is null");
+        User persistedUser = repository.findById(user.getId()).orElseThrow(UserNotFoundException::new);
+        Optional.ofNullable(user.getFirstName())
                 .filter(s -> !s.isBlank())
                 .ifPresent(persistedUser::setFirstName);
-        Optional.ofNullable(userInfoUpdate.getLastName())
+        Optional.ofNullable(user.getLastName())
                 .filter(s -> !s.isBlank())
                 .ifPresent(persistedUser::setLastName);
-        Optional.ofNullable(userInfoUpdate.getBirth())
+        Optional.ofNullable(user.getBirth())
                 .ifPresent(persistedUser::setBirth);
         repository.save(persistedUser);
+    }
+
+    private void assertUserDto(UserDto user, String msg) {
+        if (user == null) {
+            throw new IllegalArgumentException(msg);
+        }
     }
 
     @Override
@@ -65,6 +102,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(long id) {
+        assertId(id, "Can't delete a user by ID less than 1. ID = %d");
         repository.deleteById(id);
     }
 

@@ -8,7 +8,11 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    List<UserDto> findAllProjectionsBy(Pageable pageable);
+    List<UserInfoProjection> findAllProjectionsBy(Pageable pageable);
 
-    Optional<UserDto> findProjectionById(Long id);
+    Optional<UserInfoProjection> findProjectionById(Long id);
+
+    Optional<User> findByUsername(String username);
+
+    Optional<UserInfoProjection> findProjectionByUsername(String username);
 }
