@@ -2,7 +2,6 @@ package com.kiprenko.springfield.restcontroller.v1;
 
 import com.kiprenko.springfield.domain.user.UserDto;
 import com.kiprenko.springfield.domain.user.UserInfoProjection;
-import com.kiprenko.springfield.domain.user.UserRole;
 import com.kiprenko.springfield.domain.user.UserService;
 import com.kiprenko.springfield.security.AppUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,24 +72,38 @@ public class UserManageController {
 
     private void assertAccessToGetUser(Long id, String username, Authentication authentication) {
         AppUserDetails currentUser = (AppUserDetails) authentication.getPrincipal();
-        if (currentUser.getRole() == UserRole.ADMIN) {
+        if (currentUser.isAdmin()) {
             return;
         }
         Long currentUserId = currentUser.getId();
         if (!currentUserId.equals(id) || !currentUser.getUsername().equals(username)) {
-            throw new AccessDeniedException(String.format("User with ID = %s doesn't have permission to review other users information.", currentUserId));
+            throw new AccessDeniedException(String.format("User with ID = %s doesn't have permission to view other users information.", currentUserId));
         }
     }
 
     @PutMapping(value = "/updateInfo", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public void updateUserInfo(@RequestBody UserDto user) {
+    public void updateUserInfo(@RequestBody UserDto user, Authentication authentication) {
+        assertAccessToModify(user.getId(), authentication);
         userService.updateInfo(user);
     }
 
     @PutMapping(value = "/updatePassword", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public void updateUserPassword(@RequestParam Long id,
-                                   @RequestBody String newPassword) {
+                                   @RequestBody String newPassword,
+                                   Authentication authentication) {
+        assertAccessToModify(id, authentication);
         userService.updatePassword(id, newPassword);
+    }
+
+    private void assertAccessToModify(Long id, Authentication authentication) {
+        AppUserDetails currentUser = (AppUserDetails) authentication.getPrincipal();
+        if (currentUser.isAdmin()) {
+            return;
+        }
+        Long currentUserId = currentUser.getId();
+        if (!currentUserId.equals(id)) {
+            throw new AccessDeniedException(String.format("User with ID = %s doesn't have permission to modify other users information.", currentUserId));
+        }
     }
 
     @RolesAllowed(ADMIN_ROLE)

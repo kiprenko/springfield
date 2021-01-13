@@ -66,4 +66,9 @@ public class UserDetailsImpl implements AppUserDetails {
     public UserRole getRole() {
         return role;
     }
+
+    @Override
+    public boolean isAdmin() {
+        return role == UserRole.ADMIN;
+    }
 }

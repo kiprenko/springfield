@@ -7,4 +7,6 @@ public interface AppUserDetails extends UserDetails {
     Long getId();
 
     UserRole getRole();
+
+    boolean isAdmin();
 }
