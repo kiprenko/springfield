@@ -2,8 +2,12 @@ package com.kiprenko.springfield.restcontroller.v1;
 
 import com.kiprenko.springfield.domain.user.UserDto;
 import com.kiprenko.springfield.domain.user.UserInfoProjection;
+import com.kiprenko.springfield.domain.user.UserRole;
 import com.kiprenko.springfield.domain.user.UserService;
+import com.kiprenko.springfield.security.AppUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,7 +42,8 @@ public class UserManageController {
 
     @RolesAllowed(ADMIN_ROLE)
     @GetMapping(value = "/list", produces = APPLICATION_JSON_VALUE)
-    public List<UserInfoProjection> getUsersList(@RequestParam Integer pageNumber, @RequestParam(required = false) Integer pageSize) {
+    public List<UserInfoProjection> getUsersList(@RequestParam Integer pageNumber,
+                                                 @RequestParam(required = false) Integer pageSize) {
         AssertUsersListParameters(pageNumber, pageSize);
         if (pageSize == null) {
             return userService.getList(pageNumber);
@@ -56,11 +61,25 @@ public class UserManageController {
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
-    public UserInfoProjection getUser(@RequestParam(required = false) Long id, @RequestParam(required = false) String username) {
+    public UserInfoProjection getUser(@RequestParam(required = false) Long id,
+                                      @RequestParam(required = false) String username,
+                                      Authentication authentication) {
         if (id == null && username == null) {
             throw new IllegalArgumentException("Can't get a user when both id and username null. Specify id or username parameter.");
         }
+        assertAccessToGetUser(id, username, authentication);
         return id == null ? userService.get(username) : userService.get(id);
+    }
+
+    private void assertAccessToGetUser(Long id, String username, Authentication authentication) {
+        AppUserDetails currentUser = (AppUserDetails) authentication.getPrincipal();
+        if (currentUser.getRole() == UserRole.ADMIN) {
+            return;
+        }
+        Long currentUserId = currentUser.getId();
+        if (!currentUserId.equals(id) || !currentUser.getUsername().equals(username)) {
+            throw new AccessDeniedException(String.format("User with ID = %s doesn't have permission to review other users information.", currentUserId));
+        }
     }
 
     @PutMapping(value = "/updateInfo", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -69,7 +88,8 @@ public class UserManageController {
     }
 
     @PutMapping(value = "/updatePassword", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public void updateUserPassword(@RequestParam Long id, @RequestBody String newPassword) {
+    public void updateUserPassword(@RequestParam Long id,
+                                   @RequestBody String newPassword) {
         userService.updatePassword(id, newPassword);
     }
 
