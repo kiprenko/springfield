@@ -18,6 +18,9 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
+import static com.kiprenko.springfield.security.SecurityConstants.AUTHORIZATION_HEADER;
+import static com.kiprenko.springfield.security.SecurityConstants.BEARER_PREFIX;
+
 @Log4j2
 public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -58,6 +61,6 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                 .setExpiration(Date.from(Instant.now().plus(1, ChronoUnit.DAYS)))
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
-        response.addHeader("Authorization", "Bearer " + token);
+        response.addHeader(AUTHORIZATION_HEADER, BEARER_PREFIX + token);
     }
 }
