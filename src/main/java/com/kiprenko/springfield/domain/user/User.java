@@ -24,7 +24,7 @@ import java.time.LocalDate;
 @Entity
 @Builder
 @Getter @Setter
-@ToString(exclude = "password")
+@ToString(exclude = {"password", "encryptedPassword"})
 @EqualsAndHashCode()
 @NoArgsConstructor
 @AllArgsConstructor
