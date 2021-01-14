@@ -18,6 +18,7 @@ import javax.persistence.Version;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
@@ -36,6 +37,7 @@ public class User {
     @NotBlank
     @Column(unique = true)
     @Size(min = 3, max = 30)
+    @Pattern(regexp = "[a-zA-Z0-9]+")
     private String username;
     @NotBlank
     @Size(min = 3, max = 68)

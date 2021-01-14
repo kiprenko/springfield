@@ -14,15 +14,18 @@ public class UserServiceImpl implements UserService {
     public static final String USER_NOT_FOUND_BY_ID_TEMPLATE = "User with ID = %d wasn't found";
     private final UserRepository repository;
     private final UserMapper userMapper;
+    private final UserValidator validator;
     private final int defaultPageSize;
     private final int maxPageSize;
 
     public UserServiceImpl(UserRepository repository,
                            UserMapper userMapper,
+                           UserValidator validator,
                            @Value("${application.usersListDefaultPageSize}") int defaultPageSize,
                            @Value("${application.usersListMaxPageSize}") int maxPageSize) {
         this.repository = repository;
         this.userMapper = userMapper;
+        this.validator = validator;
         this.defaultPageSize = defaultPageSize;
         this.maxPageSize = maxPageSize;
     }
@@ -30,7 +33,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public User create(UserDto userDto) {
         assertUserDto(userDto, "Can't create a user info when user is null");
-        return repository.save(userMapper.convertDtoToUser(userDto));
+        User user = userMapper.convertDtoToUser(userDto);
+        validator.validate(user);
+        validator.validatePassword(user.getPassword());
+        String username = user.getUsername();
+        if (repository.existsByUsername(username)) {
+            throw new IllegalArgumentException(String.format("Username %s already exists", username));
+        }
+        return repository.save(user);
     }
 
     @Override
@@ -96,6 +106,7 @@ public class UserServiceImpl implements UserService {
                 .ifPresent(persistedUser::setLastName);
         Optional.ofNullable(user.getBirth())
                 .ifPresent(persistedUser::setBirth);
+        validator.validate(persistedUser);
         repository.save(persistedUser);
     }
 
@@ -107,9 +118,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updatePassword(Long id, String newPassword) {
-        if (newPassword == null || newPassword.isBlank()) {
-            throw new IllegalArgumentException(String.format("Can't update password for user with ID = %d. New password is null or blank", id));
-        }
+        validator.validatePassword(newPassword);
         User persistedUser = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_BY_ID_TEMPLATE, id)));
         repository.save(persistedUser);
