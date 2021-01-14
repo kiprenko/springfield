@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource("/base.properties")
+@PropertySource("classpath:base.properties")
 @ComponentScan("com.kiprenko.springfield")
 public class BaseConfiguration {
 

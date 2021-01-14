@@ -11,7 +11,7 @@ import org.springframework.http.HttpHeaders;
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties(prefix = "application.jwt")
+@ConfigurationProperties("application.jwt")
 public class JwtConfiguration {
 
     private String secretKey;
