@@ -18,6 +18,8 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
+import static com.kiprenko.springfield.security.SecurityConstants.AUTHORITIES;
+
 @Log4j2
 public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -58,7 +60,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                                             Authentication authResult) {
         String token = Jwts.builder()
                 .setSubject(authResult.getName())
-                .claim("authorities", authResult.getAuthorities())
+                .claim(AUTHORITIES, authResult.getAuthorities())
                 .setIssuedAt(new Date())
                 .setExpiration(Date.from(Instant.now().plus(jwtConfiguration.getTokenExpirationHours(), ChronoUnit.HOURS)))
                 .signWith(secretKey)

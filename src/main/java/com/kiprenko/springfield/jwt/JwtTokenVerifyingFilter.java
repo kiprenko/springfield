@@ -1,7 +1,6 @@
 package com.kiprenko.springfield.jwt;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.log4j.Log4j2;
@@ -22,6 +21,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.kiprenko.springfield.security.SecurityConstants.AUTHORITIES;
+import static com.kiprenko.springfield.security.SecurityConstants.AUTHORITY;
+
 @Log4j2
 public class JwtTokenVerifyingFilter extends OncePerRequestFilter {
 
@@ -34,6 +36,7 @@ public class JwtTokenVerifyingFilter extends OncePerRequestFilter {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
@@ -46,21 +49,24 @@ public class JwtTokenVerifyingFilter extends OncePerRequestFilter {
         String token = authorizationHeader.replace(tokenPrefix, "");
 
         try {
-            Jws<Claims> claimsJws = Jwts.parserBuilder()
+            Claims body = Jwts.parserBuilder()
                     .setSigningKey(secretKey)
                     .build()
-                    .parseClaimsJws(token);
-            Claims body = claimsJws.getBody();
+                    .parseClaimsJws(token)
+                    .getBody();
             String username = body.getSubject();
-            List<Map<String, String>> authorities = (List<Map<String, String>>) body.get("authorities");
+            List<Map<String, String>> authorities = (List<Map<String, String>>) body.get(AUTHORITIES);
+
             Set<SimpleGrantedAuthority> simpleGrantedAuthorities = authorities.stream()
-                    .map(m -> m.get("authority"))
+                    .map(m -> m.get(AUTHORITY))
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toSet());
+
             Authentication authentication = new UsernamePasswordAuthenticationToken(
                     username,
                     null,
                     simpleGrantedAuthorities);
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(request, response);
         } catch (JwtException ex) {
