@@ -2,8 +2,8 @@ package com.kiprenko.springfield.restcontroller.v1;
 
 import com.kiprenko.springfield.domain.user.UserDto;
 import com.kiprenko.springfield.domain.user.UserInfoProjection;
+import com.kiprenko.springfield.domain.user.UserRole;
 import com.kiprenko.springfield.domain.user.UserService;
-import com.kiprenko.springfield.security.AppUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -70,14 +70,15 @@ public class UserManageController {
         return id == null ? userService.get(username) : userService.get(id);
     }
 
-    private void assertAccessToGetUser(Long id, String username, Authentication authentication) {
-        AppUserDetails currentUser = (AppUserDetails) authentication.getPrincipal();
-        if (currentUser.isAdmin()) {
+    private void assertAccessToGetUser(Long id, String requestedUsername, Authentication authentication) {
+        UserInfoProjection user = userService.get((String) authentication.getPrincipal());
+        if (user.getRole() == UserRole.ADMIN) {
             return;
         }
-        Long currentUserId = currentUser.getId();
-        if (!currentUserId.equals(id) || !currentUser.getUsername().equals(username)) {
-            throw new AccessDeniedException(String.format("User with ID = %s doesn't have permission to view other users information.", currentUserId));
+        Long currentUserId = user.getId();
+        String username = user.getUsername();
+        if (!currentUserId.equals(id) || !username.equals(requestedUsername)) {
+            throw new AccessDeniedException(String.format("User with ID = %s and username = %s doesn't have permission to view other users information.", currentUserId, username));
         }
     }
 
@@ -96,13 +97,13 @@ public class UserManageController {
     }
 
     private void assertAccessToModify(Long id, Authentication authentication) {
-        AppUserDetails currentUser = (AppUserDetails) authentication.getPrincipal();
-        if (currentUser.isAdmin()) {
+        UserInfoProjection user = userService.get((String) authentication.getPrincipal());
+        if (user.getRole() == UserRole.ADMIN) {
             return;
         }
-        Long currentUserId = currentUser.getId();
+        Long currentUserId = user.getId();
         if (!currentUserId.equals(id)) {
-            throw new AccessDeniedException(String.format("User with ID = %s doesn't have permission to modify other users information.", currentUserId));
+            throw new AccessDeniedException(String.format("User with ID = %s and username = %s doesn't have permission to modify other users information.", currentUserId, user.getUsername()));
         }
     }
 

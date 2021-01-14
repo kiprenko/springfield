@@ -1,5 +1,6 @@
 package com.kiprenko.springfield.restcontroller;
 
+import com.kiprenko.springfield.exception.UserNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,9 @@ import java.security.Principal;
 public class ExceptionHandlingController {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleException(Exception ex, HttpServletRequest request, Principal principal) {
+    public ResponseEntity<Object> handleException(Exception ex,
+                                                  HttpServletRequest request,
+                                                  Principal principal) {
         LOGGER.error(generateLogMessage(ex, request, principal), ex);
         return new ResponseEntity<>(String.format("%s: %s", ex.getClass().getName(), ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -29,5 +32,14 @@ public class ExceptionHandlingController {
         logJson.put("message", ex.getMessage());
         logJson.put("requestURI", request.getRequestURI());
         return logJson.toJSONString();
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Object> handleUserNotFound(Exception ex,
+                                                     HttpServletRequest request,
+                                                     Principal principal) {
+        LOGGER.error(generateLogMessage(ex, request, principal), ex);
+        String exMessage = ex.getMessage();
+        return new ResponseEntity<>(String.format("%s: %s", ex.getClass().getName(), exMessage == null ? "User not found in the database" : exMessage), HttpStatus.NOT_FOUND);
     }
 }
