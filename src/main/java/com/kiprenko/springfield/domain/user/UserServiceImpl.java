@@ -11,28 +11,43 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 
+    public static final String USER_NOT_FOUND_BY_ID_TEMPLATE = "User with ID = %d wasn't found";
     private final UserRepository repository;
     private final UserMapper userMapper;
+    private final UserValidator validator;
     private final int defaultPageSize;
+    private final int maxPageSize;
 
     public UserServiceImpl(UserRepository repository,
                            UserMapper userMapper,
-                           @Value("${usersListDefaultPageSize}") int defaultPageSize) {
+                           UserValidator validator,
+                           @Value("${application.usersListDefaultPageSize}") int defaultPageSize,
+                           @Value("${application.usersListMaxPageSize}") int maxPageSize) {
         this.repository = repository;
         this.userMapper = userMapper;
+        this.validator = validator;
         this.defaultPageSize = defaultPageSize;
+        this.maxPageSize = maxPageSize;
     }
 
     @Override
     public User create(UserDto userDto) {
         assertUserDto(userDto, "Can't create a user info when user is null");
-        return repository.save(userMapper.convertDtoToUser(userDto));
+        User user = userMapper.convertDtoToUser(userDto);
+        validator.validate(user);
+        validator.validatePassword(user.getPassword());
+        String username = user.getUsername();
+        if (repository.existsByUsername(username)) {
+            throw new IllegalArgumentException(String.format("Username %s already exists", username));
+        }
+        return repository.save(user);
     }
 
     @Override
     public UserInfoProjection get(long id) {
         assertId(id, "Can't get a user by ID less than 1. ID = %d");
-        return repository.findProjectionById(id).orElseThrow(UserNotFoundException::new);
+        return repository.findProjectionById(id)
+                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_BY_ID_TEMPLATE, id)));
     }
 
     private void assertId(long id, String msg) {
@@ -44,7 +59,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserInfoProjection get(String username) {
         assertUsername(username);
-        return repository.findProjectionByUsername(username).orElseThrow(UserNotFoundException::new);
+        return repository.findProjectionByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(String.format("User with username = %s wasn't found", username)));
     }
 
     @Override
@@ -65,14 +81,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserInfoProjection> getList(int page, int pageSize) {
-        return repository.findAllProjectionsBy(PageRequest.of(page, pageSize));
+    public List<UserInfoProjection> getList(int pageNumber, int pageSize) {
+        if (pageNumber < 0) {
+            throw new IllegalArgumentException("Page number can't be less than zero. Page number = " + pageNumber);
+        }
+        if (pageSize < 0 || pageSize > maxPageSize) {
+            throw new IllegalArgumentException(String.format("Page size can't be less than zero or greater than %d. Page size = %d", maxPageSize, pageSize));
+        }
+        return repository.findAllProjectionsBy(PageRequest.of(pageNumber, pageSize));
     }
 
     @Override
     public void updateInfo(UserDto user) {
         assertUserDto(user, "Can't update a user info when user is null");
-        User persistedUser = repository.findById(user.getId()).orElseThrow(UserNotFoundException::new);
+        Long id = user.getId();
+        User persistedUser = repository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_BY_ID_TEMPLATE, id)));
+
         Optional.ofNullable(user.getFirstName())
                 .filter(s -> !s.isBlank())
                 .ifPresent(persistedUser::setFirstName);
@@ -81,6 +106,7 @@ public class UserServiceImpl implements UserService {
                 .ifPresent(persistedUser::setLastName);
         Optional.ofNullable(user.getBirth())
                 .ifPresent(persistedUser::setBirth);
+        validator.validate(persistedUser);
         repository.save(persistedUser);
     }
 
@@ -92,17 +118,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updatePassword(Long id, String newPassword) {
-        if (newPassword == null || newPassword.isBlank()) {
-            throw new IllegalArgumentException(String.format("Can't update password for user with ID = %d. New password is null or blank", id));
-        }
+        validator.validatePassword(newPassword);
         User persistedUser = repository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(String.format("User with ID = %d wasn't found", id)));
+                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_BY_ID_TEMPLATE, id)));
         repository.save(persistedUser);
     }
 
     @Override
     public void delete(long id) {
         assertId(id, "Can't delete a user by ID less than 1. ID = %d");
+        if (!repository.existsById(id)) {
+            throw new UserNotFoundException(String.format(USER_NOT_FOUND_BY_ID_TEMPLATE, id));
+        }
         repository.deleteById(id);
     }
 
