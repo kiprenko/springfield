@@ -43,20 +43,10 @@ public class UserManageController {
     @GetMapping(value = "/list", produces = APPLICATION_JSON_VALUE)
     public List<UserInfoProjection> getUsersList(@RequestParam Integer pageNumber,
                                                  @RequestParam(required = false) Integer pageSize) {
-        AssertUsersListParameters(pageNumber, pageSize);
         if (pageSize == null) {
             return userService.getList(pageNumber);
         }
         return userService.getList(pageNumber, pageSize);
-    }
-
-    private void AssertUsersListParameters(Integer pageNumber, Integer pageSize) {
-        if (pageNumber == null || pageNumber < 0) {
-            throw new IllegalArgumentException("Page number can't be null or less than zero. Page number = " + pageNumber);
-        }
-        if (pageSize != null && pageSize < 0) {
-            throw new IllegalArgumentException("Page size can't be less than zero. Page size = " + pageSize);
-        }
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
