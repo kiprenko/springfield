@@ -118,6 +118,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(long id) {
         assertId(id, "Can't delete a user by ID less than 1. ID = %d");
+        if (!repository.existsById(id)) {
+            throw new UserNotFoundException(String.format(USER_NOT_FOUND_BY_ID_TEMPLATE, id));
+        }
         repository.deleteById(id);
     }
 

@@ -39,11 +39,10 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
     public Authentication attemptAuthentication(HttpServletRequest request,
                                                 HttpServletResponse response) throws AuthenticationException {
         try {
-            UsernameAndPasswordAuthenticationRequest authenticationRequest = new ObjectMapper()
-                    .readValue(request.getInputStream(), UsernameAndPasswordAuthenticationRequest.class);
-
+            UsernameAndPasswordAuthenticationRequest authenticationRequest = getAuthenticationRequest(request);
             Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    authenticationRequest.getUsername(), authenticationRequest.getPassword()
+                    authenticationRequest.getUsername(),
+                    authenticationRequest.getPassword()
             );
 
             return authenticationManager.authenticate(authentication);
@@ -51,6 +50,10 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
             LOGGER.error(e);
             throw new RuntimeException(e);
         }
+    }
+
+    private UsernameAndPasswordAuthenticationRequest getAuthenticationRequest(HttpServletRequest request) throws IOException {
+        return new ObjectMapper().readValue(request.getInputStream(), UsernameAndPasswordAuthenticationRequest.class);
     }
 
     @Override

@@ -54,18 +54,11 @@ public class JwtTokenVerifyingFilter extends OncePerRequestFilter {
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-            String username = body.getSubject();
-            List<Map<String, String>> authorities = (List<Map<String, String>>) body.get(AUTHORITIES);
-
-            Set<SimpleGrantedAuthority> simpleGrantedAuthorities = authorities.stream()
-                    .map(m -> m.get(AUTHORITY))
-                    .map(SimpleGrantedAuthority::new)
-                    .collect(Collectors.toSet());
 
             Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    username,
+                    body.getSubject(),
                     null,
-                    simpleGrantedAuthorities);
+                    getAuthorities((List<Map<String, String>>) body.get(AUTHORITIES)));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(request, response);
@@ -73,5 +66,12 @@ public class JwtTokenVerifyingFilter extends OncePerRequestFilter {
             LOGGER.error(String.format("Token %s cannot be trust", token), ex);
             throw new IllegalStateException();
         }
+    }
+
+    private Set<SimpleGrantedAuthority> getAuthorities(List<Map<String, String>> authorities) {
+        return authorities.stream()
+                .map(m -> m.get(AUTHORITY))
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toSet());
     }
 }

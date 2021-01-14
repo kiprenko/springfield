@@ -67,7 +67,7 @@ public class UserManageController {
         }
         Long currentUserId = user.getId();
         String username = user.getUsername();
-        if (!currentUserId.equals(id) || !username.equals(requestedUsername)) {
+        if (!currentUserId.equals(id) && !username.equals(requestedUsername)) {
             throw new AccessDeniedException(String.format("User with ID = %s and username = %s doesn't have permission to view other users information.", currentUserId, username));
         }
     }
