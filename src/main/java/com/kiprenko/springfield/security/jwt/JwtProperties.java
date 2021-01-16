@@ -25,7 +25,7 @@ public class JwtProperties {
     @Positive
     private Integer tokenExpirationHours;
 
-    public String getAuthorizationHeader() {
+    public String getAuthorizationHeaderName() {
         return HttpHeaders.AUTHORIZATION;
     }
 }

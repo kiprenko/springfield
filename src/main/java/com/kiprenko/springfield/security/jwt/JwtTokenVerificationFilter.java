@@ -41,7 +41,7 @@ public class JwtTokenVerificationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        String authorizationHeader = request.getHeader(jwtProperties.getAuthorizationHeader());
+        String authorizationHeader = request.getHeader(jwtProperties.getAuthorizationHeaderName());
         String tokenPrefix = jwtProperties.getTokenPrefix();
         if (authorizationHeader == null || authorizationHeader.isBlank() || !authorizationHeader.startsWith(tokenPrefix)) {
             filterChain.doFilter(request, response);

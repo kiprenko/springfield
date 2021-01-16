@@ -70,6 +70,6 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                 .setExpiration(Date.from(Instant.now().plus(jwtProperties.getTokenExpirationHours(), ChronoUnit.HOURS)))
                 .signWith(secretKey)
                 .compact();
-        response.addHeader(jwtProperties.getAuthorizationHeader(), jwtProperties.getTokenPrefix() + token);
+        response.addHeader(jwtProperties.getAuthorizationHeaderName(), jwtProperties.getTokenPrefix() + token);
     }
 }
