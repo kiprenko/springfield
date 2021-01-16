@@ -3,7 +3,6 @@ package com.kiprenko.springfield.restcontroller;
 import com.kiprenko.springfield.exception.UserNotFoundException;
 import com.kiprenko.springfield.exception.UsernameAlreadyExists;
 import lombok.extern.log4j.Log4j2;
-import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,6 +15,15 @@ import java.security.Principal;
 @Log4j2
 public class ExceptionHandlingController {
 
+    public static final String LOG_JSON_TEMPLATE = "{\n" +
+            "  \"username\": \"%s\",\n" +
+            "  \"IP\": \"%s\",\n" +
+            "  \"timestamp\": \"%d\",\n" +
+            "  \"exception\": \"%s\",\n" +
+            "  \"message\": \"%s\",\n" +
+            "  \"requestURI\": \"%s\"\n" +
+            "}\n";
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleException(Exception ex,
                                                   HttpServletRequest request,
@@ -25,14 +33,12 @@ public class ExceptionHandlingController {
     }
 
     private String generateLogMessage(Exception ex, HttpServletRequest request, Principal principal) {
-        JSONObject logJson = new JSONObject();
-        logJson.put("username", principal.getName());
-        logJson.put("IP", request.getRemoteAddr());
-        logJson.put("timestamp", System.currentTimeMillis());
-        logJson.put("exception", ex.getClass().getName());
-        logJson.put("message", ex.getMessage());
-        logJson.put("requestURI", request.getRequestURI());
-        return logJson.toJSONString();
+        return String.format(LOG_JSON_TEMPLATE, principal.getName(),
+                                                request.getRemoteAddr(),
+                                                System.currentTimeMillis(),
+                                                ex.getClass().getName(),
+                                                ex.getMessage(),
+                                                request.getRequestURI());
     }
 
     @ExceptionHandler(UserNotFoundException.class)
