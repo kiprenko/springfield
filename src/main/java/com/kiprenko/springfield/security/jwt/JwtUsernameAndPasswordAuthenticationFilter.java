@@ -29,10 +29,12 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
     public JwtUsernameAndPasswordAuthenticationFilter(AuthenticationManager authenticationManager,
                                                       JwtProperties jwtProperties,
-                                                      SecretKey secretKey) {
+                                                      SecretKey secretKey,
+                                                      String filterProcessesUrl) {
         this.authenticationManager = authenticationManager;
         this.jwtProperties = jwtProperties;
         this.secretKey = secretKey;
+        setFilterProcessesUrl(filterProcessesUrl);
     }
 
     @Override
