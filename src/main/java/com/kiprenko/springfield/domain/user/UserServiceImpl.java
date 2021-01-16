@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import static java.lang.String.format;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -21,8 +23,8 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl(UserRepository repository,
                            UserMapper userMapper,
                            UserValidator validator,
-                           @Value("${application.usersListDefaultPageSize}") int defaultPageSize,
-                           @Value("${application.usersListMaxPageSize}") int maxPageSize) {
+                           @Value("${application.options.usersListDefaultPageSize}") int defaultPageSize,
+                           @Value("${application.options.usersListMaxPageSize}") int maxPageSize) {
         this.repository = repository;
         this.userMapper = userMapper;
         this.validator = validator;
@@ -38,7 +40,7 @@ public class UserServiceImpl implements UserService {
         validator.validatePassword(user.getPassword());
         String username = user.getUsername();
         if (repository.existsByUsername(username)) {
-            throw new IllegalArgumentException(String.format("Username %s already exists", username));
+            throw new IllegalArgumentException(format("Username %s already exists", username));
         }
         return repository.save(user);
     }
@@ -47,12 +49,12 @@ public class UserServiceImpl implements UserService {
     public UserInfoProjection get(long id) {
         assertId(id, "Can't get a user by ID less than 1. ID = %d");
         return repository.findProjectionById(id)
-                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_BY_ID_TEMPLATE, id)));
+                .orElseThrow(() -> new UserNotFoundException(format(USER_NOT_FOUND_BY_ID_TEMPLATE, id)));
     }
 
     private void assertId(long id, String msg) {
         if (id < 1) {
-            throw new IllegalArgumentException(String.format(msg, id));
+            throw new IllegalArgumentException(format(msg, id));
         }
     }
 
@@ -60,7 +62,7 @@ public class UserServiceImpl implements UserService {
     public UserInfoProjection get(String username) {
         assertUsername(username);
         return repository.findProjectionByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException(String.format("User with username = %s wasn't found", username)));
+                .orElseThrow(() -> new UserNotFoundException(format("User with username = %s wasn't found", username)));
     }
 
     @Override
@@ -86,7 +88,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Page number can't be less than zero. Page number = " + pageNumber);
         }
         if (pageSize < 0 || pageSize > maxPageSize) {
-            throw new IllegalArgumentException(String.format("Page size can't be less than zero or greater than %d. Page size = %d", maxPageSize, pageSize));
+            throw new IllegalArgumentException(format("Page size can't be less than zero or greater than %d. Page size = %d", maxPageSize, pageSize));
         }
         return repository.findAllProjectionsBy(PageRequest.of(pageNumber, pageSize));
     }
@@ -96,7 +98,7 @@ public class UserServiceImpl implements UserService {
         assertUserDto(user, "Can't update a user info when user is null");
         Long id = user.getId();
         User persistedUser = repository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_BY_ID_TEMPLATE, id)));
+                .orElseThrow(() -> new UserNotFoundException(format(USER_NOT_FOUND_BY_ID_TEMPLATE, id)));
 
         Optional.ofNullable(user.getFirstName())
                 .filter(s -> !s.isBlank())
@@ -120,7 +122,7 @@ public class UserServiceImpl implements UserService {
     public void updatePassword(Long id, String newPassword) {
         validator.validatePassword(newPassword);
         User persistedUser = repository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND_BY_ID_TEMPLATE, id)));
+                .orElseThrow(() -> new UserNotFoundException(format(USER_NOT_FOUND_BY_ID_TEMPLATE, id)));
         repository.save(persistedUser);
     }
 
@@ -128,7 +130,7 @@ public class UserServiceImpl implements UserService {
     public void delete(long id) {
         assertId(id, "Can't delete a user by ID less than 1. ID = %d");
         if (!repository.existsById(id)) {
-            throw new UserNotFoundException(String.format(USER_NOT_FOUND_BY_ID_TEMPLATE, id));
+            throw new UserNotFoundException(format(USER_NOT_FOUND_BY_ID_TEMPLATE, id));
         }
         repository.deleteById(id);
     }

@@ -1,6 +1,7 @@
 package com.kiprenko.springfield.domain.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.validation.ConstraintViolation;
@@ -12,12 +13,16 @@ import java.util.Set;
 public class UserValidatorImpl implements UserValidator {
 
     public static final String USERNAME_AND_PASSWORD_REGEX = "[a-zA-Z0-9]+";
-    public static final int MIN_PASSWORD_LENGTH = 6;
-    public static final int MAX_PASSWORD_LENGTH = 30;
+    public final int minPasswordLength;
+    public final int maxPasswordLength;
     private final Validator validator;
 
     @Autowired
-    public UserValidatorImpl(Validator validator) {
+    public UserValidatorImpl(@Value("${application.options.minPasswordLength}") int minPasswordLength,
+                             @Value("${application.options.maxPasswordLength}") int maxPasswordLength,
+                             Validator validator) {
+        this.minPasswordLength = minPasswordLength;
+        this.maxPasswordLength = maxPasswordLength;
         this.validator = validator;
     }
 
@@ -39,9 +44,9 @@ public class UserValidatorImpl implements UserValidator {
         }
 
         int passwordLength = password.length();
-        if (passwordLength < MIN_PASSWORD_LENGTH || passwordLength > MAX_PASSWORD_LENGTH) {
+        if (passwordLength < minPasswordLength || passwordLength > maxPasswordLength) {
             throw new IllegalArgumentException(String.format("password field must be greater than %d and less than %d",
-                    MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH));
+                    minPasswordLength, maxPasswordLength));
         }
 
         if (!password.matches(USERNAME_AND_PASSWORD_REGEX)) {
