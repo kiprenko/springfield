@@ -1,8 +1,8 @@
 package com.kiprenko.springfield.security;
 
-import com.kiprenko.springfield.jwt.JwtProperties;
-import com.kiprenko.springfield.jwt.JwtTokenVerifyingFilter;
-import com.kiprenko.springfield.jwt.JwtUsernameAndPasswordAuthenticationFilter;
+import com.kiprenko.springfield.security.jwt.JwtProperties;
+import com.kiprenko.springfield.security.jwt.JwtTokenVerifyingFilter;
+import com.kiprenko.springfield.security.jwt.JwtUsernameAndPasswordAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

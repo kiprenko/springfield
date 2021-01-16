@@ -1,4 +1,4 @@
-package com.kiprenko.springfield.jwt;
+package com.kiprenko.springfield.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;

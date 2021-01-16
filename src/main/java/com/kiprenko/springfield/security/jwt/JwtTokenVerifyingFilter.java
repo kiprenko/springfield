@@ -1,4 +1,4 @@
-package com.kiprenko.springfield.jwt;
+package com.kiprenko.springfield.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
