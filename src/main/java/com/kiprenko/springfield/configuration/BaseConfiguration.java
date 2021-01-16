@@ -10,7 +10,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 
 @Configuration
-@PropertySource("classpath:base.properties")
+@PropertySource({"classpath:base.properties", "classpath:swagger.properties", "classpath:security.properties"})
 @ComponentScan("com.kiprenko.springfield")
 public class BaseConfiguration {
 

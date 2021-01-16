@@ -50,7 +50,7 @@ public class UserValidatorImpl implements UserValidator {
         }
 
         if (!password.matches(USERNAME_AND_PASSWORD_REGEX)) {
-            throw new IllegalArgumentException(String.format("password field = must match %s", USERNAME_AND_PASSWORD_REGEX));
+            throw new IllegalArgumentException(String.format("password field must match %s", USERNAME_AND_PASSWORD_REGEX));
         }
     }
 }

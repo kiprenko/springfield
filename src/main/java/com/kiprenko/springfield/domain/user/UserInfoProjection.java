@@ -1,10 +1,11 @@
 package com.kiprenko.springfield.domain.user;
 
-import org.springframework.data.rest.core.config.Projection;
+import io.swagger.annotations.ApiModel;
 
 import java.time.LocalDate;
 
-@Projection(types = User.class, name = "UserInfoProjection")
+@ApiModel(value = "User Information",
+        description = "Information about a user")
 public interface UserInfoProjection {
     Long getId();
 

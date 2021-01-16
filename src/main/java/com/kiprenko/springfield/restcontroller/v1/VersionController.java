@@ -1,5 +1,6 @@
 package com.kiprenko.springfield.restcontroller.v1;
 
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,7 @@ public class VersionController {
         this.apiVersion = apiVersion;
     }
 
+    @ApiOperation("Returns the API version.")
     @GetMapping(value = "/version")
     public String version() {
         return apiVersion;

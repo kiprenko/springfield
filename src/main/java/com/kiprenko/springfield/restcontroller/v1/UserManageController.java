@@ -6,7 +6,10 @@ import com.kiprenko.springfield.domain.user.UserRole;
 import com.kiprenko.springfield.domain.user.UserService;
 import com.kiprenko.springfield.exception.UserNotFoundException;
 import com.kiprenko.springfield.exception.UsernameAlreadyExists;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,15 +39,24 @@ public class UserManageController {
         this.userService = userService;
     }
 
+    @ApiOperation(value = "Creates a new user.",
+            notes = "Creates a new user by provided information. Returns the ID of created user. ")
     @RolesAllowed(ADMIN_ROLE)
     @PostMapping(value = "/create", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public long createUser(@RequestBody UserDto user) throws UsernameAlreadyExists {
+    public long createUser(@ApiParam(value = "The information about a new user.", required = true)
+                           @RequestBody UserDto user) throws UsernameAlreadyExists {
         return userService.create(user).getId();
     }
 
+    @ApiOperation(value = "Returns list of users.",
+            notes = "Returns a list that contains information about existing users. " +
+                    "Supports pagination. Uses pageNumber and pageSize to get the list. " +
+                    "If pageSize isn't provided, will be used a default value.")
     @RolesAllowed(ADMIN_ROLE)
     @GetMapping(value = "/list", produces = APPLICATION_JSON_VALUE)
-    public List<UserInfoProjection> getUsersList(@RequestParam Integer pageNumber,
+    public List<UserInfoProjection> getUsersList(@ApiParam(value = "The page number.", required = true, allowableValues = "range[0, infinity]")
+                                                 @RequestParam Integer pageNumber,
+                                                 @ApiParam(value = "The page size.", allowableValues = "range[1, 500]")
                                                  @RequestParam(required = false) Integer pageSize) {
         if (pageSize == null) {
             return userService.getList(pageNumber);
@@ -52,8 +64,14 @@ public class UserManageController {
         return userService.getList(pageNumber, pageSize);
     }
 
+    @ApiOperation(value = "Returns user information by ID or by username.",
+            notes = "Returns user information by ID or by username. " +
+                    "Both ID and username parameters are not required, but at least one of them must be. " +
+                    "If both ID and username were specified, ID will be used to get a user.")
     @GetMapping(produces = APPLICATION_JSON_VALUE)
-    public UserInfoProjection getUser(@RequestParam(required = false) Long id,
+    public UserInfoProjection getUser(@ApiParam(value = "The ID of the user.", allowableValues = "range[1, infinity]")
+                                      @RequestParam(required = false) Long id,
+                                      @ApiParam(value = "The username of the user.", allowableValues = "range[1, infinity]")
                                       @RequestParam(required = false) String username,
                                       Authentication authentication) throws UserNotFoundException {
         if (id == null && username == null) {
@@ -78,14 +96,22 @@ public class UserManageController {
         }
     }
 
-    @PutMapping(value = "/updateInfo", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public void updateUserInfo(@RequestBody UserDto user, Authentication authentication) throws UserNotFoundException {
+    @ApiOperation(value = "Updates user information",
+            notes = "Updates user information by user ID. Fields that can be updated: firstName, lastName, birth.")
+    @PutMapping(value = "/updateInfo", consumes = APPLICATION_JSON_VALUE)
+    public void updateUserInfo(@ApiParam(value = "The user information to update.", required = true)
+                               @RequestBody UserDto user,
+                               Authentication authentication) throws UserNotFoundException {
         assertAccessToModify(user.getId(), authentication);
         userService.updateInfo(user);
     }
 
-    @PutMapping(value = "/updatePassword", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public void updateUserPassword(@RequestParam Long id,
+    @ApiOperation(value = "Updates a user password.",
+            notes = "Updates a user password by user ID.")
+    @PutMapping(value = "/updatePassword", consumes = MediaType.TEXT_PLAIN_VALUE)
+    public void updateUserPassword(@ApiParam(value = "The ID of the user to update the password.", required = true, allowableValues = "range[1, infinity]")
+                                   @RequestParam Long id,
+                                   @ApiParam(value = "A new password", required = true)
                                    @RequestBody String newPassword,
                                    Authentication authentication) throws UserNotFoundException {
         assertAccessToModify(id, authentication);
@@ -106,12 +132,15 @@ public class UserManageController {
         }
     }
 
+    @ApiOperation(value = "Deletes a user by ID.")
     @RolesAllowed(ADMIN_ROLE)
     @DeleteMapping(value = "/delete")
-    public void deleteUser(@RequestParam Long id) throws UserNotFoundException {
+    public void deleteUser(@ApiParam(value = "The ID of the user to delete", required = true, allowableValues = "range[1, infinity]")
+                           @RequestParam Long id) throws UserNotFoundException {
         userService.delete(id);
     }
 
+    @ApiOperation(value = "Returns count of existing users.")
     @RolesAllowed(ADMIN_ROLE)
     @GetMapping(value = "/count", produces = APPLICATION_JSON_VALUE)
     public long getUsersCount() {

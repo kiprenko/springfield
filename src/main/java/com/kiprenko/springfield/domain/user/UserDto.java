@@ -1,5 +1,6 @@
 package com.kiprenko.springfield.domain.user;
 
+import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 @Setter
 @EqualsAndHashCode
 @ToString(exclude = "password")
+@ApiModel(value = "User Data Transfer Object")
 public class UserDto {
     private Long id;
     private String username;
