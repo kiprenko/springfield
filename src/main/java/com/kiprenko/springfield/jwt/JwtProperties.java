@@ -12,9 +12,9 @@ import org.springframework.http.HttpHeaders;
 @Setter
 @Configuration
 @ConfigurationProperties("application.jwt")
-public class JwtConfiguration {
+public class JwtProperties {
 
-    private String secretKey;
+    private String passphrase;
     private String tokenPrefix;
     private Integer tokenExpirationHours;
 

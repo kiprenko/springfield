@@ -1,6 +1,6 @@
 package com.kiprenko.springfield.security;
 
-import com.kiprenko.springfield.jwt.JwtConfiguration;
+import com.kiprenko.springfield.jwt.JwtProperties;
 import com.kiprenko.springfield.jwt.JwtTokenVerifyingFilter;
 import com.kiprenko.springfield.jwt.JwtUsernameAndPasswordAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,17 +25,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
-    private final JwtConfiguration jwtConfiguration;
+    private final JwtProperties jwtProperties;
     private final SecretKey secretKey;
 
     @Autowired
     public SecurityConfiguration(PasswordEncoder passwordEncoder,
                                  @Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService,
-                                 JwtConfiguration jwtConfiguration,
+                                 JwtProperties jwtProperties,
                                  SecretKey secretKey) {
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
-        this.jwtConfiguration = jwtConfiguration;
+        this.jwtProperties = jwtProperties;
         this.secretKey = secretKey;
     }
 
@@ -46,8 +46,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfiguration, secretKey))
-                .addFilterAfter(new JwtTokenVerifyingFilter(jwtConfiguration, secretKey), JwtUsernameAndPasswordAuthenticationFilter.class)
+                .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtProperties, secretKey))
+                .addFilterAfter(new JwtTokenVerifyingFilter(jwtProperties, secretKey), JwtUsernameAndPasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .anyRequest()
                 .authenticated();

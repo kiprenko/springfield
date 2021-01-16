@@ -24,14 +24,14 @@ import static com.kiprenko.springfield.security.SecurityConstants.AUTHORITIES;
 public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
-    private final JwtConfiguration jwtConfiguration;
+    private final JwtProperties jwtProperties;
     private final SecretKey secretKey;
 
     public JwtUsernameAndPasswordAuthenticationFilter(AuthenticationManager authenticationManager,
-                                                      JwtConfiguration jwtConfiguration,
+                                                      JwtProperties jwtProperties,
                                                       SecretKey secretKey) {
         this.authenticationManager = authenticationManager;
-        this.jwtConfiguration = jwtConfiguration;
+        this.jwtProperties = jwtProperties;
         this.secretKey = secretKey;
     }
 
@@ -65,9 +65,9 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                 .setSubject(authResult.getName())
                 .claim(AUTHORITIES, authResult.getAuthorities())
                 .setIssuedAt(new Date())
-                .setExpiration(Date.from(Instant.now().plus(jwtConfiguration.getTokenExpirationHours(), ChronoUnit.HOURS)))
+                .setExpiration(Date.from(Instant.now().plus(jwtProperties.getTokenExpirationHours(), ChronoUnit.HOURS)))
                 .signWith(secretKey)
                 .compact();
-        response.addHeader(jwtConfiguration.getAuthorizationHeader(), jwtConfiguration.getTokenPrefix() + token);
+        response.addHeader(jwtProperties.getAuthorizationHeader(), jwtProperties.getTokenPrefix() + token);
     }
 }

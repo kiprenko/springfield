@@ -27,11 +27,11 @@ import static com.kiprenko.springfield.security.SecurityConstants.AUTHORITY;
 @Log4j2
 public class JwtTokenVerifyingFilter extends OncePerRequestFilter {
 
-    private final JwtConfiguration jwtConfiguration;
+    private final JwtProperties jwtProperties;
     private final SecretKey secretKey;
 
-    public JwtTokenVerifyingFilter(JwtConfiguration jwtConfiguration, SecretKey secretKey) {
-        this.jwtConfiguration = jwtConfiguration;
+    public JwtTokenVerifyingFilter(JwtProperties jwtProperties, SecretKey secretKey) {
+        this.jwtProperties = jwtProperties;
         this.secretKey = secretKey;
     }
 
@@ -40,8 +40,8 @@ public class JwtTokenVerifyingFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        String authorizationHeader = request.getHeader(jwtConfiguration.getAuthorizationHeader());
-        String tokenPrefix = jwtConfiguration.getTokenPrefix();
+        String authorizationHeader = request.getHeader(jwtProperties.getAuthorizationHeader());
+        String tokenPrefix = jwtProperties.getTokenPrefix();
         if (authorizationHeader == null || authorizationHeader.isBlank() || !authorizationHeader.startsWith(tokenPrefix)) {
             filterChain.doFilter(request, response);
             return;
