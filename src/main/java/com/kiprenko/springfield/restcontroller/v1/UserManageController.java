@@ -9,6 +9,7 @@ import com.kiprenko.springfield.exception.UsernameAlreadyExists;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -107,7 +108,7 @@ public class UserManageController {
 
     @ApiOperation(value = "Updates a user password.",
             notes = "Updates a user password by user ID.")
-    @PutMapping(value = "/updatePassword")
+    @PutMapping(value = "/updatePassword", consumes = MediaType.TEXT_PLAIN_VALUE)
     public void updateUserPassword(@ApiParam(value = "The ID of the user to update the password.", required = true, allowableValues = "range[1, infinity]")
                                    @RequestParam Long id,
                                    @ApiParam(value = "A new password", required = true)

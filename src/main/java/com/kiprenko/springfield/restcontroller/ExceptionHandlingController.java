@@ -29,16 +29,16 @@ public class ExceptionHandlingController {
                                                   HttpServletRequest request,
                                                   Principal principal) {
         LOGGER.error(generateLogMessage(ex, request, principal), ex);
-        return getResponseEntity(ex.getClass().getName(), ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return getResponseEntity(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private String generateLogMessage(Exception ex, HttpServletRequest request, Principal principal) {
         return String.format(LOG_JSON_TEMPLATE, principal.getName(),
-                                                request.getRemoteAddr(),
-                                                System.currentTimeMillis(),
-                                                ex.getClass().getName(),
-                                                ex.getMessage(),
-                                                request.getRequestURI());
+                request.getRemoteAddr(),
+                System.currentTimeMillis(),
+                ex.getClass().getName(),
+                ex.getMessage(),
+                request.getRequestURI());
     }
 
     @ExceptionHandler(UserNotFoundException.class)
@@ -47,9 +47,7 @@ public class ExceptionHandlingController {
                                                      Principal principal) {
         LOGGER.error(generateLogMessage(ex, request, principal), ex);
         String exMessage = ex.getMessage();
-        return getResponseEntity(ex.getClass().getName(),
-                exMessage == null ? "User not found in the database" : exMessage,
-                HttpStatus.NOT_FOUND);
+        return getResponseEntity(exMessage == null ? "User not found in the database" : exMessage, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(UsernameAlreadyExists.class)
@@ -58,14 +56,11 @@ public class ExceptionHandlingController {
                                                               Principal principal) {
         LOGGER.error(generateLogMessage(ex, request, principal), ex);
         String exMessage = ex.getMessage();
-        return getResponseEntity(ex.getClass().getName(),
-                exMessage == null ? "Username already exists" : exMessage,
-                HttpStatus.CONFLICT);
+        return getResponseEntity(exMessage == null ? "Username already exists" : exMessage, HttpStatus.CONFLICT);
     }
 
-    private ResponseEntity<Object> getResponseEntity(String exceptionClassName,
-                                                     String exceptionMessage,
+    private ResponseEntity<Object> getResponseEntity(String exceptionMessage,
                                                      HttpStatus status) {
-        return new ResponseEntity<>(String.format("%s: %s", exceptionClassName, exceptionMessage), status);
+        return new ResponseEntity<>(exceptionMessage, status);
     }
 }
