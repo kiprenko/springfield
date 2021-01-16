@@ -1,6 +1,7 @@
 package com.kiprenko.springfield.domain.user;
 
 import com.kiprenko.springfield.exception.UserNotFoundException;
+import com.kiprenko.springfield.exception.UsernameAlreadyExists;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -33,14 +34,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User create(UserDto userDto) {
+    public User create(UserDto userDto) throws UsernameAlreadyExists {
         assertUserDto(userDto, "Can't create a user info when user is null");
         User user = userMapper.convertDtoToUser(userDto);
         validator.validate(user);
         validator.validatePassword(user.getPassword());
         String username = user.getUsername();
         if (repository.existsByUsername(username)) {
-            throw new IllegalArgumentException(format("Username %s already exists", username));
+            throw new UsernameAlreadyExists(format("Username %s already exists", username));
         }
         return repository.save(user);
     }

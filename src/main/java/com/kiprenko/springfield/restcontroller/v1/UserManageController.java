@@ -4,6 +4,7 @@ import com.kiprenko.springfield.domain.user.UserDto;
 import com.kiprenko.springfield.domain.user.UserInfoProjection;
 import com.kiprenko.springfield.domain.user.UserRole;
 import com.kiprenko.springfield.domain.user.UserService;
+import com.kiprenko.springfield.exception.UsernameAlreadyExists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -20,6 +21,7 @@ import javax.annotation.security.RolesAllowed;
 import java.util.List;
 
 import static com.kiprenko.springfield.security.SecurityConstants.ADMIN_ROLE;
+import static java.lang.String.format;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
@@ -35,7 +37,7 @@ public class UserManageController {
 
     @RolesAllowed(ADMIN_ROLE)
     @PostMapping(value = "/create", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public long createUser(@RequestBody UserDto user) {
+    public long createUser(@RequestBody UserDto user) throws UsernameAlreadyExists {
         return userService.create(user).getId();
     }
 
@@ -68,7 +70,10 @@ public class UserManageController {
         Long currentUserId = user.getId();
         String username = user.getUsername();
         if (!currentUserId.equals(id) && !username.equals(requestedUsername)) {
-            throw new AccessDeniedException(String.format("User with ID = %s and username = %s doesn't have permission to view other users information.", currentUserId, username));
+            throw new AccessDeniedException(
+                    format("User with ID = %s and username = %s doesn't have permission to view other users information.",
+                            currentUserId, username)
+            );
         }
     }
 
@@ -93,7 +98,10 @@ public class UserManageController {
         }
         Long currentUserId = user.getId();
         if (!currentUserId.equals(id)) {
-            throw new AccessDeniedException(String.format("User with ID = %s and username = %s doesn't have permission to modify other users information.", currentUserId, user.getUsername()));
+            throw new AccessDeniedException(
+                    format("User with ID = %s and username = %s doesn't have permission to modify other users information.",
+                            currentUserId, user.getUsername())
+            );
         }
     }
 

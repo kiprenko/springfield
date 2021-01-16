@@ -1,10 +1,12 @@
 package com.kiprenko.springfield.domain.user;
 
+import com.kiprenko.springfield.exception.UsernameAlreadyExists;
+
 import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-    User create(UserDto user);
+    User create(UserDto user) throws UsernameAlreadyExists;
 
     UserInfoProjection get(long id);
 
