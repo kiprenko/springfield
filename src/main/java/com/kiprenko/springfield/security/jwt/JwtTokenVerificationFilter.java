@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -63,8 +64,9 @@ public class JwtTokenVerificationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(request, response);
         } catch (JwtException ex) {
-            LOGGER.error(String.format("Token %s cannot be trust", token), ex);
-            throw new IllegalStateException();
+            String errorMessage = String.format("Token %s cannot be trust", token);
+            LOGGER.error(errorMessage, ex);
+            throw new AccessDeniedException(errorMessage, ex);
         }
     }
 
