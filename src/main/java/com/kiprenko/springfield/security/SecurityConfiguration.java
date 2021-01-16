@@ -5,6 +5,7 @@ import com.kiprenko.springfield.jwt.JwtTokenVerifyingFilter;
 import com.kiprenko.springfield.jwt.JwtUsernameAndPasswordAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -20,6 +21,7 @@ import javax.crypto.SecretKey;
 
 
 @EnableWebSecurity
+@EnableConfigurationProperties(JwtProperties.class)
 @EnableGlobalMethodSecurity(jsr250Enabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
