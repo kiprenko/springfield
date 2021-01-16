@@ -1,5 +1,6 @@
 package com.kiprenko.springfield.restcontroller.v1;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -8,10 +9,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 public class VersionController {
 
-    private static final String VERSION = "1.0";
+    private final String apiVersion;
+
+    public VersionController(@Value("${application.options.apiVersion}") String apiVersion) {
+        this.apiVersion = apiVersion;
+    }
 
     @GetMapping(value = "/version")
     public String version() {
-        return VERSION;
+        return apiVersion;
     }
 }
