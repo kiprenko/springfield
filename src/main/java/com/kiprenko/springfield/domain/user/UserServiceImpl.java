@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserInfoProjection get(long id) {
+    public UserInfoProjection get(long id) throws UserNotFoundException {
         assertId(id, "Can't get a user by ID less than 1. ID = %d");
         return repository.findProjectionById(id)
                 .orElseThrow(() -> new UserNotFoundException(format(USER_NOT_FOUND_BY_ID_TEMPLATE, id)));
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserInfoProjection get(String username) {
+    public UserInfoProjection get(String username) throws UserNotFoundException {
         assertUsername(username);
         return repository.findProjectionByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(format("User with username = %s wasn't found", username)));
@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateInfo(UserDto user) {
+    public void updateInfo(UserDto user) throws UserNotFoundException {
         assertUserDto(user, "Can't update a user info when user is null");
         Long id = user.getId();
         User persistedUser = repository.findById(id)
@@ -120,7 +120,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updatePassword(Long id, String newPassword) {
+    public void updatePassword(Long id, String newPassword) throws UserNotFoundException {
         validator.validatePassword(newPassword);
         User persistedUser = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(format(USER_NOT_FOUND_BY_ID_TEMPLATE, id)));
@@ -128,7 +128,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(long id) throws UserNotFoundException {
         assertId(id, "Can't delete a user by ID less than 1. ID = %d");
         if (!repository.existsById(id)) {
             throw new UserNotFoundException(format(USER_NOT_FOUND_BY_ID_TEMPLATE, id));

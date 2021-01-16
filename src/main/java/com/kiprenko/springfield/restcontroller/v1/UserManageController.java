@@ -4,6 +4,7 @@ import com.kiprenko.springfield.domain.user.UserDto;
 import com.kiprenko.springfield.domain.user.UserInfoProjection;
 import com.kiprenko.springfield.domain.user.UserRole;
 import com.kiprenko.springfield.domain.user.UserService;
+import com.kiprenko.springfield.exception.UserNotFoundException;
 import com.kiprenko.springfield.exception.UsernameAlreadyExists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -54,7 +55,7 @@ public class UserManageController {
     @GetMapping(produces = APPLICATION_JSON_VALUE)
     public UserInfoProjection getUser(@RequestParam(required = false) Long id,
                                       @RequestParam(required = false) String username,
-                                      Authentication authentication) {
+                                      Authentication authentication) throws UserNotFoundException {
         if (id == null && username == null) {
             throw new IllegalArgumentException("Can't get a user when both id and username null. Specify id or username parameter.");
         }
@@ -62,7 +63,7 @@ public class UserManageController {
         return id == null ? userService.get(username) : userService.get(id);
     }
 
-    private void assertAccessToGetUser(Long id, String requestedUsername, Authentication authentication) {
+    private void assertAccessToGetUser(Long id, String requestedUsername, Authentication authentication) throws UserNotFoundException {
         UserInfoProjection user = userService.get((String) authentication.getPrincipal());
         if (user.getRole() == UserRole.ADMIN) {
             return;
@@ -78,7 +79,7 @@ public class UserManageController {
     }
 
     @PutMapping(value = "/updateInfo", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public void updateUserInfo(@RequestBody UserDto user, Authentication authentication) {
+    public void updateUserInfo(@RequestBody UserDto user, Authentication authentication) throws UserNotFoundException {
         assertAccessToModify(user.getId(), authentication);
         userService.updateInfo(user);
     }
@@ -86,12 +87,12 @@ public class UserManageController {
     @PutMapping(value = "/updatePassword", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public void updateUserPassword(@RequestParam Long id,
                                    @RequestBody String newPassword,
-                                   Authentication authentication) {
+                                   Authentication authentication) throws UserNotFoundException {
         assertAccessToModify(id, authentication);
         userService.updatePassword(id, newPassword);
     }
 
-    private void assertAccessToModify(Long id, Authentication authentication) {
+    private void assertAccessToModify(Long id, Authentication authentication) throws UserNotFoundException {
         UserInfoProjection user = userService.get((String) authentication.getPrincipal());
         if (user.getRole() == UserRole.ADMIN) {
             return;
@@ -107,7 +108,7 @@ public class UserManageController {
 
     @RolesAllowed(ADMIN_ROLE)
     @DeleteMapping(value = "/delete")
-    public void deleteUser(@RequestParam Long id) {
+    public void deleteUser(@RequestParam Long id) throws UserNotFoundException {
         userService.delete(id);
     }
 
