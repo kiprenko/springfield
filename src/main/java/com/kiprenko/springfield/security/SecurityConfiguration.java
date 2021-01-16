@@ -1,7 +1,7 @@
 package com.kiprenko.springfield.security;
 
 import com.kiprenko.springfield.security.jwt.JwtProperties;
-import com.kiprenko.springfield.security.jwt.JwtTokenVerifyingFilter;
+import com.kiprenko.springfield.security.jwt.JwtTokenVerificationFilter;
 import com.kiprenko.springfield.security.jwt.JwtUsernameAndPasswordAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -52,7 +52,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         jwtProperties,
                         secretKey,
                         "/getToken"))
-                .addFilterAfter(new JwtTokenVerifyingFilter(jwtProperties, secretKey), JwtUsernameAndPasswordAuthenticationFilter.class)
+                .addFilterAfter(new JwtTokenVerificationFilter(jwtProperties, secretKey), JwtUsernameAndPasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .anyRequest()
                 .authenticated();

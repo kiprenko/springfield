@@ -25,12 +25,12 @@ import static com.kiprenko.springfield.security.SecurityConstants.AUTHORITIES;
 import static com.kiprenko.springfield.security.SecurityConstants.AUTHORITY;
 
 @Log4j2
-public class JwtTokenVerifyingFilter extends OncePerRequestFilter {
+public class JwtTokenVerificationFilter extends OncePerRequestFilter {
 
     private final JwtProperties jwtProperties;
     private final SecretKey secretKey;
 
-    public JwtTokenVerifyingFilter(JwtProperties jwtProperties, SecretKey secretKey) {
+    public JwtTokenVerificationFilter(JwtProperties jwtProperties, SecretKey secretKey) {
         this.jwtProperties = jwtProperties;
         this.secretKey = secretKey;
     }
