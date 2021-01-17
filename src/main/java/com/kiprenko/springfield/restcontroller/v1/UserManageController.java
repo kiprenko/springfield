@@ -44,7 +44,7 @@ public class UserManageController {
     @ApiOperation(value = "Creates a new user.",
             notes = "Creates a new user by provided information. Returns the ID of created user. ")
     @RolesAllowed(ADMIN_ROLE)
-    @PostMapping(value = "/create", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/create", consumes = APPLICATION_JSON_VALUE)
     public long createUser(@ApiParam(value = "The information about a new user.", required = true)
                            @RequestBody UserDto user) throws UsernameAlreadyExists {
         return userService.create(user).getId();
