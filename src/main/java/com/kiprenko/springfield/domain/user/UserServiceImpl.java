@@ -4,6 +4,7 @@ import com.kiprenko.springfield.exception.UserNotFoundException;
 import com.kiprenko.springfield.exception.UsernameAlreadyExists;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,17 +19,20 @@ public class UserServiceImpl implements UserService {
     private final UserRepository repository;
     private final UserMapper userMapper;
     private final UserValidator validator;
+    private final PasswordEncoder passwordEncoder;
     private final int defaultPageSize;
     private final int maxPageSize;
 
     public UserServiceImpl(UserRepository repository,
                            UserMapper userMapper,
                            UserValidator validator,
+                           PasswordEncoder passwordEncoder,
                            @Value("${application.options.usersListDefaultPageSize}") int defaultPageSize,
                            @Value("${application.options.usersListMaxPageSize}") int maxPageSize) {
         this.repository = repository;
         this.userMapper = userMapper;
         this.validator = validator;
+        this.passwordEncoder = passwordEncoder;
         this.defaultPageSize = defaultPageSize;
         this.maxPageSize = maxPageSize;
     }
@@ -124,6 +128,7 @@ public class UserServiceImpl implements UserService {
         validator.validatePassword(newPassword);
         User persistedUser = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(format(USER_NOT_FOUND_BY_ID_TEMPLATE, id)));
+        persistedUser.setEncryptedPassword(passwordEncoder.encode(newPassword));
         repository.save(persistedUser);
     }
 
