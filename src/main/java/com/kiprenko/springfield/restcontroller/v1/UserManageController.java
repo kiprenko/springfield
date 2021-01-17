@@ -6,6 +6,7 @@ import com.kiprenko.springfield.domain.user.UserRole;
 import com.kiprenko.springfield.domain.user.UserService;
 import com.kiprenko.springfield.exception.UserNotFoundException;
 import com.kiprenko.springfield.exception.UsernameAlreadyExists;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import static com.kiprenko.springfield.security.SecurityConstants.ADMIN_ROLE;
 import static java.lang.String.format;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+@Api(tags = "User Management")
 @RestController
 @RequestMapping("/api/v1/user")
 public class UserManageController {

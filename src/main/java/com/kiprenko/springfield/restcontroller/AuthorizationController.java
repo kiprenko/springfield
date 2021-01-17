@@ -1,6 +1,7 @@
-package com.kiprenko.springfield.restcontroller.v1;
+package com.kiprenko.springfield.restcontroller;
 
 import com.kiprenko.springfield.security.jwt.UsernameAndPasswordAuthenticationRequest;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+@Api(tags = "Authorization")
 @RestController
 @RequestMapping("/api")
 public class AuthorizationController {
