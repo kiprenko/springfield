@@ -5,7 +5,7 @@ import com.kiprenko.springfield.domain.user.UserInfoProjection;
 import com.kiprenko.springfield.domain.user.UserRole;
 import com.kiprenko.springfield.domain.user.UserService;
 import com.kiprenko.springfield.exception.UserNotFoundException;
-import com.kiprenko.springfield.exception.UsernameAlreadyExists;
+import com.kiprenko.springfield.exception.UsernameAlreadyExistsException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -46,7 +46,7 @@ public class UserManageController {
     @RolesAllowed(ADMIN_ROLE)
     @PostMapping(value = "/create", consumes = APPLICATION_JSON_VALUE)
     public long createUser(@ApiParam(value = "The information about a new user.", required = true)
-                           @RequestBody UserDto user) throws UsernameAlreadyExists {
+                           @RequestBody UserDto user) throws UsernameAlreadyExistsException {
         return userService.create(user).getId();
     }
 

@@ -1,8 +1,9 @@
 package com.kiprenko.springfield.restcontroller;
 
 import com.kiprenko.springfield.exception.UserNotFoundException;
-import com.kiprenko.springfield.exception.UsernameAlreadyExists;
+import com.kiprenko.springfield.exception.UsernameAlreadyExistsException;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -44,9 +45,9 @@ public class ExceptionHandlingController {
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<Object> handleUserNotFound(Exception ex,
-                                                     HttpServletRequest request,
-                                                     Principal principal) {
+    public ResponseEntity<Object> handleUserNotFoundException(Exception ex,
+                                                              HttpServletRequest request,
+                                                              Principal principal) {
         LOGGER.error(generateLogMessage(ex, request, principal), ex);
         String exMessage = ex.getMessage();
         return getResponseEntity(exMessage == null ? "User not found in the database" : exMessage, HttpStatus.NOT_FOUND);
@@ -69,13 +70,21 @@ public class ExceptionHandlingController {
         return getResponseEntity("Access is denied", HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(UsernameAlreadyExists.class)
-    public ResponseEntity<Object> handleUsernameAlreadyExists(Exception ex,
-                                                              HttpServletRequest request,
-                                                              Principal principal) {
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ResponseEntity<Object> handleUsernameAlreadyExistsException(Exception ex,
+                                                                       HttpServletRequest request,
+                                                                       Principal principal) {
         LOGGER.error(generateLogMessage(ex, request, principal), ex);
         String exMessage = ex.getMessage();
         return getResponseEntity(exMessage == null ? "Username already exists" : exMessage, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ConversionFailedException.class)
+    public ResponseEntity<Object> handleConversionFailedException(Exception ex,
+                                                                  HttpServletRequest request,
+                                                                  Principal principal) {
+        LOGGER.error(generateLogMessage(ex, request, principal), ex);
+        return getResponseEntity(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     private ResponseEntity<Object> getResponseEntity(String exceptionMessage,

@@ -1,5 +1,7 @@
 package com.kiprenko.springfield.domain.user;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Set;
@@ -31,5 +33,15 @@ public enum UserRole {
                 .collect(Collectors.toSet());
         permissions.add(new SimpleGrantedAuthority("ROLE_" + this.name()));
         return permissions;
+    }
+
+    @JsonCreator
+    public static UserRole forValue(String value) {
+        return valueOf(value.toUpperCase());
+    }
+
+    @JsonValue
+    public String toValue() {
+        return this.name();
     }
 }
