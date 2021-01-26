@@ -1,7 +1,6 @@
 # springfield
 
-A simple Java REST-application built on Spring Boot. The main purpose of it is to manage stored users' information by REST API.
-To store the users' data the application uses the H2 in-memory database. All endpoints were described with Swagger 2. Also, the application is secured with Spring Security and JWT. To get rid of boilerplate code the application uses Lombok.<br>
+A Java application to manage stored users' information by REST API built on Spring Boot. To store the users' data the application uses the H2 in-memory database. All endpoints were described with Swagger 2. The application is secured with Spring Security and JWT. To get rid of boilerplate code the application uses Lombok.<br>
 
 ## Getting started
 
