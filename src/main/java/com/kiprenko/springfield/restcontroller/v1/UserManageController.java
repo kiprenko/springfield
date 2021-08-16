@@ -1,15 +1,17 @@
 package com.kiprenko.springfield.restcontroller.v1;
 
-import com.kiprenko.springfield.domain.user.UserDto;
-import com.kiprenko.springfield.domain.user.UserInfoProjection;
-import com.kiprenko.springfield.domain.user.UserRole;
-import com.kiprenko.springfield.domain.user.UserService;
-import com.kiprenko.springfield.exception.UserNotFoundException;
-import com.kiprenko.springfield.exception.UsernameAlreadyExistsException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+
+import javax.annotation.security.RolesAllowed;
+import java.util.List;
+
+import static com.kiprenko.springfield.security.SecurityConstants.ADMIN_ROLE;
+import static java.lang.String.format;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -21,13 +23,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.security.RolesAllowed;
-import java.util.List;
-
-import static com.kiprenko.springfield.security.SecurityConstants.ADMIN_ROLE;
-import static java.lang.String.format;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import com.kiprenko.springfield.domain.user.UserDto;
+import com.kiprenko.springfield.domain.user.UserInfoProjection;
+import com.kiprenko.springfield.domain.user.UserRole;
+import com.kiprenko.springfield.domain.user.UserService;
+import com.kiprenko.springfield.exception.UserNotFoundException;
+import com.kiprenko.springfield.exception.UsernameAlreadyExistsException;
 
 @Api(tags = "User Management")
 @RestController
@@ -51,19 +52,12 @@ public class UserManageController {
     }
 
     @ApiOperation(value = "Returns list of users.",
-            notes = "Returns a list that contains information about existing users. " +
-                    "Supports pagination. Uses pageNumber and pageSize to get the list. " +
-                    "If pageSize isn't provided, will be used a default value.")
+            notes = "Returns a list that contains information about existing users. Supports pagination.")
     @RolesAllowed(ADMIN_ROLE)
     @GetMapping(value = "/list", produces = APPLICATION_JSON_VALUE)
-    public List<UserInfoProjection> getUsersList(@ApiParam(value = "The page number.", required = true, allowableValues = "range[0, infinity]")
-                                                 @RequestParam Integer pageNumber,
-                                                 @ApiParam(value = "The page size.", allowableValues = "range[1, 500]")
-                                                 @RequestParam(required = false) Integer pageSize) {
-        if (pageSize == null) {
-            return userService.getList(pageNumber);
-        }
-        return userService.getList(pageNumber, pageSize);
+    public List<UserInfoProjection> getUsersList(@ApiParam(value = "The page number.", required = true)
+                                                 @RequestParam Pageable pageable) {
+        return userService.getList(pageable);
     }
 
     @ApiOperation(value = "Returns user information by ID or by username.",

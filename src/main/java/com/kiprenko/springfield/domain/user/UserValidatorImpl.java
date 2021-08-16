@@ -35,6 +35,7 @@ public class UserValidatorImpl implements UserValidator {
             String msg = String.format("%s field %s", constraintViolation.getPropertyPath().toString(), constraintViolation.getMessage());
             throw new IllegalArgumentException(msg);
         }
+        validatePassword(user.getPassword());
     }
 
     @Override

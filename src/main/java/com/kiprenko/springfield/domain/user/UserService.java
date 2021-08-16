@@ -6,6 +6,8 @@ import com.kiprenko.springfield.exception.UsernameAlreadyExistsException;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
+
 public interface UserService {
     User create(UserDto user) throws UsernameAlreadyExistsException;
 
@@ -16,6 +18,8 @@ public interface UserService {
     Optional<User> getUser(String username);
 
     List<UserInfoProjection> getList(int page);
+
+    List<UserInfoProjection> getList(Pageable pageable);
 
     List<UserInfoProjection> getList(int page, int pageSize);
 

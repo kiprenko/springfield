@@ -4,6 +4,7 @@ import com.kiprenko.springfield.exception.UserNotFoundException;
 import com.kiprenko.springfield.exception.UsernameAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +43,6 @@ public class UserServiceImpl implements UserService {
         assertUserDto(userDto, "Can't create a user info when user is null");
         User user = userMapper.convertDtoToUser(userDto);
         validator.validate(user);
-        validator.validatePassword(user.getPassword());
         String username = user.getUsername();
         if (repository.existsByUsername(username)) {
             throw new UsernameAlreadyExistsException(format("Username %s already exists", username));
@@ -85,6 +85,23 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserInfoProjection> getList(int page) {
         return getList(page, defaultPageSize);
+    }
+
+    @Override
+    public List<UserInfoProjection> getList(Pageable pageable) {
+        if (pageable == null) {
+            throw new IllegalArgumentException("Pageable can't be null");
+        }
+
+        int pageNumber = pageable.getPageNumber();
+        if (pageNumber < 0) {
+            throw new IllegalArgumentException("Page number can't be less than zero. Page number = " + pageNumber);
+        }
+        int pageSize = pageable.getPageSize();
+        if (pageSize < 0 || pageSize > maxPageSize) {
+            throw new IllegalArgumentException(format("Page size can't be less than zero or greater than %d. Page size = %d", maxPageSize, pageSize));
+        }
+        return repository.findAllProjectionsBy(pageable);
     }
 
     @Override
