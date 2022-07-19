@@ -16,7 +16,7 @@
 
     <properties>
         <java.version>11</java.version>
-        <spring-boot.version>2.4.1</spring-boot.version>
+        <spring-boot.version>2.5.12</spring-boot.version>
         <springfox-swagger.version>3.0.0</springfox-swagger.version>
     </properties>
 
