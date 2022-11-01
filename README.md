@@ -136,6 +136,6 @@ the endpoints to understand how to use them.
 
 ## Author 🦝
 
-- Name: Evgeniy Kiprenko
+- Name: Yevhenii Kiprenko
 - Email: zhenyakiprenko@gmail.com
 - [LinkedIn](https://www.linkedin.com/in/kiprenko/)
